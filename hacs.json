@@ -1,0 +1,8 @@
+{
+  "name": "Pluggit",
+  "zip_release": true,
+  "hide_default_branch": false,
+  "filename": "pluggit.zip",
+  "render_readme": true,
+  "content_in_root": false
+}
