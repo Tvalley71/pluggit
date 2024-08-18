@@ -5,7 +5,7 @@ on:
     types: [published]
 
 jobs:
-  copy-files:
+  copy-file:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,15 +26,7 @@ jobs:
 
     - name: Copy shared code files from the Dantherm integration
       run: |
-        cp dantherm/custom_components/dantherm/__init__.py \
-                dantherm/custom_components/dantherm/button.py \
-                dantherm/custom_components/dantherm/config_flow.py \
-                dantherm/custom_components/dantherm/cover.py \
-                dantherm/custom_components/dantherm/device.py \
-                dantherm/custom_components/dantherm/number.py \
-                dantherm/custom_components/dantherm/select.py \
-                dantherm/custom_components/dantherm/sensor.py \
-                dantherm/custom_components/dantherm/switch.py ./custom_components/pluggit/
+        cp dantherm/custom_components/dantherm/__init__.py dantherm/custom_components/dantherm/button.py dantherm/custom_components/dantherm/config_flow.py dantherm/custom_components/dantherm/cover.py dantherm/custom_components/dantherm/device.py dantherm/custom_components/dantherm/number.py dantherm/custom_components/dantherm/select.py dantherm/custom_components/dantherm/sensor.py dantherm/custom_components/dantherm/switch.py ./custom_components/pluggit/
         cp -r dantherm/custom_components/dantherm/translations ./custom_components/pluggit/translations/
 
     - name: Commit and push changes
