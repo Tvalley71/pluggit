@@ -39,13 +39,26 @@ jobs:
         run: git clone --depth 1 https://github.com/Tvalley71/dantherm.git
 
       - name: Copy README.md
-        run: cp dantherm/README.md "${{ github.workspace }}/README.md"
+        run: cp dantherm/README.md ./README.md
   
       - name: Remove existing disclaimer from README.md
-        run: sed -i '/Disclaimer/,$d' "${{ github.workspace }}/README.md"
+        run: sed -i '/Disclaimer/,$d' ./README.md
   
       - name: Append current repository disclaimer
-        run: cat ./disclaimer.txt >> "${{ github.workspace }}/README.md"
+        run: cat ./disclaimer.txt >> ./README.md
+
+      - name: Copy shared code files from the Dantherm integration
+        run: |
+          cp dantherm/custom_components/dantherm/__init__.py \
+                dantherm/custom_components/dantherm/button.py \
+                dantherm/custom_components/dantherm/config_flow.py \
+                dantherm/custom_components/dantherm/cover.py \
+                dantherm/custom_components/dantherm/device.py \
+                dantherm/custom_components/dantherm/number.py \
+                dantherm/custom_components/dantherm/select.py \
+                dantherm/custom_components/dantherm/sensor.py \
+                dantherm/custom_components/dantherm/switch.py "${{ github.workspace }}/custom_components/pluggit/"
+          cp -r dantherm/custom_components/dantherm/translations "${{ github.workspace }}/custom_components/pluggit/translations/"
 
       - name: 📦 Create zip file for the integration
         run: |
