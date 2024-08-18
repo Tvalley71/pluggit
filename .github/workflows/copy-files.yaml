@@ -5,7 +5,7 @@ on:
     types: [published]
 
 jobs:
-  copy-file:
+  copy-files:
     runs-on: ubuntu-latest
 
     steps:
@@ -43,6 +43,6 @@ jobs:
         git config user.email "actions@github.com"
         git add .
         git commit -m "Copy files from the Dantherm integration during release"
-        git push
+        git push origin HRAD:Pluggit
       env:
         GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
