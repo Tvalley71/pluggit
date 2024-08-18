@@ -5,7 +5,7 @@ on:
     types: [published]
 
 jobs:
-  copy-file:
+  copy-files:
     runs-on: ubuntu-latest
 
     steps:
