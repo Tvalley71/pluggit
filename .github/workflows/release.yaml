@@ -35,6 +35,18 @@ jobs:
             exit 1
           fi
 
+      - name: Clone the Dantherm repository
+        run: git clone --depth 1 https://github.com/Tvalley71/dantherm.git
+
+      - name: Copy README.md
+        run: cp dantherm/README.md "${{ github.workspace }}/README.md"
+  
+      - name: Remove existing disclaimer from README.md
+        run: sed -i '/Disclaimer/,$d' "${{ github.workspace }}/README.md"
+  
+      - name: Append current repository disclaimer
+        run: cat ./disclaimer.txt >> "${{ github.workspace }}/README.md"
+
       - name: 📦 Create zip file for the integration
         run: |
           cd "${{ github.workspace }}/custom_components/pluggit"
