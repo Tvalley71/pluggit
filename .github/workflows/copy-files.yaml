@@ -27,14 +27,14 @@ jobs:
     - name: Copy shared code files from the Dantherm integration
       run: |
         cp dantherm/custom_components/dantherm/__init__.py \
-        dantherm/custom_components/dantherm/button.py \
-        dantherm/custom_components/dantherm/config_flow.py \
-        dantherm/custom_components/dantherm/cover.py \
-        dantherm/custom_components/dantherm/device.py \
-        dantherm/custom_components/dantherm/number.py \
-        dantherm/custom_components/dantherm/select.py \
-        dantherm/custom_components/dantherm/sensor.py \
-        dantherm/custom_components/dantherm/switch.py ./custom_components/pluggit/
+              dantherm/custom_components/dantherm/button.py \
+              dantherm/custom_components/dantherm/config_flow.py \
+              dantherm/custom_components/dantherm/cover.py \
+              dantherm/custom_components/dantherm/device.py \
+              dantherm/custom_components/dantherm/number.py \
+              dantherm/custom_components/dantherm/select.py \
+              dantherm/custom_components/dantherm/sensor.py \
+              dantherm/custom_components/dantherm/switch.py ./custom_components/pluggit/
         cp -r dantherm/custom_components/dantherm/translations ./custom_components/pluggit/translations/
 
     - name: Commit and push changes
@@ -43,6 +43,6 @@ jobs:
         git config user.email "actions@github.com"
         git add .
         git commit -m "Copy files from the Dantherm integration during release"
-        git push origin HEAD:pluggit
+        git push
       env:
         GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
