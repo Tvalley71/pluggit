@@ -45,6 +45,7 @@ jobs:
                 dantherm/custom_components/dantherm/config_flow.py \
                 dantherm/custom_components/dantherm/cover.py \
                 dantherm/custom_components/dantherm/device.py \
+                dantherm/custom_components/dantherm/device_map.py \
                 dantherm/custom_components/dantherm/number.py \
                 dantherm/custom_components/dantherm/select.py \
                 dantherm/custom_components/dantherm/sensor.py \
