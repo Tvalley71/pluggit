@@ -38,15 +38,6 @@ jobs:
       - name: Submodule the Dantherm repository
         run: git submodule add https://github.com/Tvalley71/dantherm.git dantherm
 
-#      - name: Copy README.md
-#        run: cp dantherm/README.md ./README.md
-  
-#      - name: Remove existing disclaimer from README.md
-#        run: sed -i '/Disclaimer/,$d' ./README.md
-  
-#      - name: Append current repository disclaimer
-#        run: cat ./disclaimer.txt >> ./README.md
-        
       - name: Copy shared code files from the Dantherm integration
         run: |
           cp dantherm/custom_components/dantherm/__init__.py \
@@ -60,18 +51,8 @@ jobs:
                 dantherm/custom_components/dantherm/switch.py "${{ github.workspace }}/custom_components/pluggit/"
           cp -r dantherm/custom_components/dantherm/translations "${{ github.workspace }}/custom_components/pluggit/translations/"
 
-      - name: Remove 
+      - name: Remove the Dantherm submodule 
         run: git rm --cached dantherm
-
-#      - name: Commit and push changes
-#        run: |
-#          git config user.name "GitHub Actions"
-#          git config user.email "actions@github.com"
-#          git add .
-#          git commit -m "Copy files from the Dantherm integration during release"
-#          git push origin HEAD:main
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: 📦 Create zip file for the integration
         run: |
