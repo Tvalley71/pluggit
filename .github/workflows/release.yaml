@@ -36,8 +36,8 @@ jobs:
           fi
 
       - name: Clone the Dantherm repository
-        #run: git clone --depth 1 https://github.com/Tvalley71/dantherm.git
-        run: git submodule add https://github.com/Tvalley71/dantherm.git dantherm
+        run: git clone --depth 1 https://github.com/Tvalley71/dantherm.git
+        #run: git submodule add https://github.com/Tvalley71/dantherm.git dantherm
 
       - name: Copy README.md
         run: cp dantherm/README.md ./README.md
