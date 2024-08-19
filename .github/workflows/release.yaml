@@ -36,8 +36,8 @@ jobs:
           fi
 
       - name: Clone the Dantherm repository
-        run: git clone --depth 1 https://github.com/Tvalley71/dantherm.git
-        #run: git submodule add https://github.com/Tvalley71/dantherm.git dantherm
+        #run: git clone --depth 1 https://github.com/Tvalley71/dantherm.git
+        run: git submodule add https://github.com/Tvalley71/dantherm.git dantherm
 
       - name: Copy README.md
         run: cp dantherm/README.md ./README.md
@@ -47,16 +47,6 @@ jobs:
   
       - name: Append current repository disclaimer
         run: cat ./disclaimer.txt >> ./README.md
-
-      - name: Commit and push changes
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add .
-          git commit -m "Copy files from the Dantherm integration during release"
-          git push origin HEAD:main
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         
       - name: Copy shared code files from the Dantherm integration
         run: |
@@ -70,6 +60,19 @@ jobs:
                 dantherm/custom_components/dantherm/sensor.py \
                 dantherm/custom_components/dantherm/switch.py "${{ github.workspace }}/custom_components/pluggit/"
           cp -r dantherm/custom_components/dantherm/translations "${{ github.workspace }}/custom_components/pluggit/translations/"
+
+      - name: Remove 
+        run: git rm --cached dantherm
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add .
+          git commit -m "Copy files from the Dantherm integration during release"
+          git push origin HEAD:main
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: 📦 Create zip file for the integration
         run: |
