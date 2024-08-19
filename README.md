@@ -16,9 +16,11 @@ Known supported units:
 
 The trademark "Pluggit" is owned by Pluggit GmbH.
 
+The trademark "Dantherm" is owned by Dantherm Group A/S.
+
 All product names, trademarks, and registered trademarks mentioned in this repository are the property of their respective owners.
 
-I am not affiliated with Pluggit.
+I am not affiliated with Pluggit or Dantherm, except as the owner of a Dantherm HCV400 P2 unit.
 
 The author does not guarantee the functionality of this integration and is not responsible for any damage.
 
