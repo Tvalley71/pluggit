@@ -11,6 +11,9 @@ Known supported units:
 > [!NOTE]
 > The listed units are known to have been used with the integration.
 
+<a href="https://my.home-assistant.io/redirect/hacs_repository/?owner=Tvalley71&repository=Pluggit&category=Integration"><img src="https://my.home-assistant.io/badges/hacs_repository.svg" alt="Open your Home Assistant instance and open a repository inside the Home Assistant Community Store." width="" height=""></a>
+
+
 
 ## Disclaimer
 
