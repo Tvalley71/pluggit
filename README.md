@@ -10,11 +10,6 @@ Known supported units:
 - AP310
 - 
 
-> [!NOTE]
-> The listed units are known to have been used with the integration. Basicly all units that use the _Pluggit iFlow_ app ought to work with the integration
-> ([Google Play](https://play.google.com/store/apps/details?id=net.pluggit.uvc) or [Apple Store](https://apps.apple.com/dk/app/pluggit-iflow/id698715680?platform=iphone)).
-> If you know of any not included in the list, please feel free to contact me [here](https://github.com/Tvalley71/dantherm/discussions/new?category=general).
-
 ### Installation
 
 > [!IMPORTANT]
