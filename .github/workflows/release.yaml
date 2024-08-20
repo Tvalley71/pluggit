@@ -36,7 +36,7 @@ jobs:
           fi
 
       - name: Submodule the Dantherm repository
-        run: git submodule add https://github.com/Tvalley71/dantherm.git dantherm
+        run: git submodule add -b dev https://github.com/Tvalley71/dantherm.git dantherm
 
       - name: Copy shared code files from the Dantherm integration
         run: |
