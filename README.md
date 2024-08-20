@@ -5,6 +5,11 @@ Home Assistant integration for Pluggit ventilation units
 > [!TIP]
 > This integration is a spin off from the Dantherm integration, which can be found [here](https://github.com/Tvalley71/dantherm). The Pluggit and Dantherm ventilation units seem to utilize the same controller unit.
 
+### Support
+
+Please refer to the Dantherm Integration for discussions [here](https://github.com/Tvalley71/dantherm/discussions). Issues can be [opened](https://github.com/Tvalley71/pluggit/issues/new) directly on this repository.
+
+
 Known supported units:
 
 - AP310
