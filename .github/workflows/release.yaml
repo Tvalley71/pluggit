@@ -49,9 +49,15 @@ jobs:
                 dantherm/custom_components/dantherm/number.py \
                 dantherm/custom_components/dantherm/select.py \
                 dantherm/custom_components/dantherm/sensor.py \
+                dantherm/custom_components/dantherm/services.py \
+                dantherm/custom_components/dantherm/services.yaml \
                 dantherm/custom_components/dantherm/switch.py "${{ github.workspace }}/custom_components/pluggit/"
           cp -r dantherm/custom_components/dantherm/translations "${{ github.workspace }}/custom_components/pluggit/translations/"
 
+      - name: 🔄 Replace integration name in services.yaml
+        run: |
+          sed -i 's/integration: dantherm/integration: pluggit/g' custom_components/pluggit/services.yaml
+          
       - name: Remove the Dantherm submodule 
         run: git rm --cached dantherm
 
