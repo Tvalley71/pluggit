@@ -1,7 +1,3 @@
-# This GitHub action workflow is meant to be copyable to any repo that have the same structure.
-# - Your integration exist under custom_components/{INTEGRATION_NAME}/[integration files]
-# - You are using GitHub releases to publish new versions
-
 name: Release Workflow
 
 on:
@@ -18,11 +14,13 @@ jobs:
 
       - name: 🔢 Get release version
         id: version
-        uses: home-assistant/actions/helpers/version@master
-
+        run: |
+          VERSION=$(jq -r '.version' "${{ github.workspace }}/custom_components/pluggit/manifest.json")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+    
       - name: 🖊️ Set version number
         run: |
-          jq '.version = "${{ steps.version.outputs.version }}"' \
+          jq --arg version "${{ steps.version.outputs.version }}" '.version = $version' \
             "${{ github.workspace }}/custom_components/pluggit/manifest.json" > tmp \
             && mv -f tmp "${{ github.workspace }}/custom_components/pluggit/manifest.json"
 
@@ -35,8 +33,20 @@ jobs:
             exit 1
           fi
 
-      - name: Submodule the Dantherm repository
-        run: git submodule add -b main https://github.com/Tvalley71/dantherm.git dantherm
+      - name: Set the Dantherm branch
+        id: set-dantherm-branch
+        run: |
+          if [ "${{ github.event.release.prerelease }}" = "true" ]; then
+            echo "Using dev branch for pre-release"
+            echo "dantherm_branch=dev" >> $GITHUB_ENV
+          else
+            echo "Using main branch"
+            echo "dantherm_branch=main" >> $GITHUB_ENV
+          fi
+
+      - name: Checkout Dantherm repository
+        run: |
+          git clone --branch ${{ env.dantherm_branch }} https://github.com/Tvalley71/dantherm.git dantherm
 
       - name: Copy shared code files from the Dantherm integration
         run: |
@@ -52,26 +62,20 @@ jobs:
                 dantherm/custom_components/dantherm/services.py \
                 dantherm/custom_components/dantherm/services.yaml \
                 dantherm/custom_components/dantherm/switch.py "${{ github.workspace }}/custom_components/pluggit/"
+
           cp -r dantherm/custom_components/dantherm/translations "${{ github.workspace }}/custom_components/pluggit/translations/"
 
       - name: 🔄 Replace integration name in services.yaml
         run: |
           sed -i 's/integration: dantherm/integration: pluggit/g' custom_components/pluggit/services.yaml
-          
-      - name: Remove the Dantherm submodule 
-        run: git rm --cached dantherm
 
       - name: 📦 Create zip file for the integration
         run: |
           cd "${{ github.workspace }}/custom_components/pluggit"
           zip pluggit.zip -r ./
-
+     
       - name: 📤 Upload the zip file as a release asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN  }}
+        uses: softprops/action-gh-release@v1
         with:
-          upload_url: "${{ github.event.release.upload_url }}"
-          asset_path: "${{ github.workspace }}/custom_components/pluggit/pluggit.zip"
-          asset_name: pluggit.zip
-          asset_content_type: application/zip
+          files: "${{ github.workspace }}/custom_components/pluggit/pluggit.zip"
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
