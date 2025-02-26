@@ -61,7 +61,8 @@ jobs:
                 dantherm/custom_components/dantherm/sensor.py \
                 dantherm/custom_components/dantherm/services.py \
                 dantherm/custom_components/dantherm/services.yaml \
-                dantherm/custom_components/dantherm/switch.py "${{ github.workspace }}/custom_components/pluggit/"
+                dantherm/custom_components/dantherm/switch.py \
+                dantherm/custom_components/dantherm/text.py "${{ github.workspace }}/custom_components/pluggit/"
 
           cp -r dantherm/custom_components/dantherm/translations "${{ github.workspace }}/custom_components/pluggit/translations/"
 
