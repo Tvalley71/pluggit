@@ -50,21 +50,9 @@ jobs:
 
       - name: Copy shared code files from the Dantherm integration
         run: |
-          cp dantherm/custom_components/dantherm/__init__.py \
-                dantherm/custom_components/dantherm/button.py \
-                dantherm/custom_components/dantherm/config_flow.py \
-                dantherm/custom_components/dantherm/cover.py \
-                dantherm/custom_components/dantherm/device.py \
-                dantherm/custom_components/dantherm/device_map.py \
-                dantherm/custom_components/dantherm/number.py \
-                dantherm/custom_components/dantherm/select.py \
-                dantherm/custom_components/dantherm/sensor.py \
-                dantherm/custom_components/dantherm/services.py \
-                dantherm/custom_components/dantherm/services.yaml \
-                dantherm/custom_components/dantherm/switch.py \
-                dantherm/custom_components/dantherm/text.py "${{ github.workspace }}/custom_components/pluggit/"
-
-          cp -r dantherm/custom_components/dantherm/translations "${{ github.workspace }}/custom_components/pluggit/translations/"
+          rsync -av --exclude 'const.py' --exclude 'manifest.json' \
+            dantherm/custom_components/dantherm/ \
+            "${{ github.workspace }}/custom_components/pluggit/"
 
       - name: 🔄 Replace integration name in services.yaml
         run: |
