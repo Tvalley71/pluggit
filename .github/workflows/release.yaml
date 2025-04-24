@@ -29,16 +29,19 @@ jobs:
             exit 1
           fi
 
-      - name: Set the Dantherm branch
-        id: set-dantherm-branch
-        run: |
-          if [ "${{ github.event.release.prerelease }}" = "true" ]; then
-            echo "Using dev branch for pre-release"
-            echo "dantherm_branch=dev" >> $GITHUB_ENV
-          else
-            echo "Using main branch"
-            echo "dantherm_branch=main" >> $GITHUB_ENV
-          fi
+#      - name: Set the Dantherm branch
+#        id: set-dantherm-branch
+#        run: |
+#          if [ "${{ github.event.release.prerelease }}" = "true" ]; then
+#            echo "Using dev branch for pre-release"
+#            echo "dantherm_branch=dev" >> $GITHUB_ENV
+#          else
+#            echo "Using main branch"
+#            echo "dantherm_branch=main" >> $GITHUB_ENV
+#          fi
+
+      - name: Set the Dantherm branch (manual override)
+        run: echo "dantherm_branch=main" >> $GITHUB_ENV
 
       - name: Checkout Dantherm repository
         run: |
