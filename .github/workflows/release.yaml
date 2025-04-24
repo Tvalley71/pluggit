@@ -12,24 +12,20 @@ jobs:
       - name: 📥 Checkout the repository
         uses: actions/checkout@v2
 
-      - name: 🔢 Get release version
-        id: version
+      - name: 🔢 Set version number from GitHub release tag
         run: |
-          VERSION=$(jq -r '.version' "${{ github.workspace }}/custom_components/pluggit/manifest.json")
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-    
-      - name: 🖊️ Set version number
-        run: |
-          jq --arg version "${{ steps.version.outputs.version }}" '.version = $version' \
+          VERSION="${{ github.event.release.tag_name }}"
+          jq --arg version "$VERSION" '.version = $version' \
             "${{ github.workspace }}/custom_components/pluggit/manifest.json" > tmp \
             && mv -f tmp "${{ github.workspace }}/custom_components/pluggit/manifest.json"
 
-      - name: 👀 Validate data
+      - name: 👀 Validate that manifest version is correct
         run: |
           manifestversion=$(jq -r '.version' ${{ github.workspace }}/custom_components/pluggit/manifest.json)
-          if [ "$manifestversion" != "${{ steps.version.outputs.version }}" ]; then
-            echo "The version in custom_components/pluggit/manifest.json was not correct"
-            echo "$manifestversion"
+          if [ "$manifestversion" != "${{ github.event.release.tag_name }}" ]; then
+            echo "The version in manifest.json does not match the release tag"
+            echo "Manifest version: $manifestversion"
+            echo "Release tag: ${{ github.event.release.tag_name }}"
             exit 1
           fi
 
@@ -62,7 +58,7 @@ jobs:
         run: |
           cd "${{ github.workspace }}/custom_components/pluggit"
           zip pluggit.zip -r ./
-     
+
       - name: 📤 Upload the zip file as a release asset
         uses: softprops/action-gh-release@v1
         with:
