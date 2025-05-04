@@ -1,0 +1,348 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Modbus forbindelse",
+        "data": {
+          "host": "Indtast ip-adresse til din enhed",
+          "name": "Indtast prefix til din enheds entiteter",
+          "port": "Indtast TCP port der skal forbindes til på din enhed",
+          "scan_interval": "Indtast opdateringsfrekvens for modbus registere i sekunder"
+        }
+      }
+    },
+    "error": {
+      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+    },
+    "abort": {
+      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+    }
+  },
+  "options": {
+    "step": {
+        "init": {
+            "title": "Dantherm Integration Configuration",
+            "data": {
+                "boost_mode_trigger": "Boost-tilstand udløser entitet",
+                "eco_mode_trigger": "Eco-tilstand udløser entitet",
+                "home_mode_trigger": "Hjemmetilstand udløser entitet"
+            }
+        }
+    },
+    "error": {
+        "invalid_entity": "Ugyldigt enheds-ID. Indtast venligst en gyldig binær sensor eller input boolean."
+    }
+  },
+  "entity": {
+    "button": {
+      "filter_reset": { "name": "Nulstil filter" },
+      "alarm_reset": { "name": "Nulstil alarm" }
+    },
+    "cover": {
+      "bypass_damper": { "name": "Bypass spjæld"}
+    },
+    "number": {
+      "filter_lifetime": { "name": "Filter livstid" },
+      "bypass_minimum_temperature": { "name": "Bypass minimum temperatur" },
+      "bypass_maximum_temperature": { "name": "Bypass maximum temperatur" },
+      "manual_bypass_duration": { "name": "Manuel bypass varighed" },
+      "boost_mode_timeout": { "name": "Boost-tilstand timeout" },
+      "eco_mode_timeout": { "name": "Eco-tilstand timeout" },
+      "home_mode_timeout": { "name": "Hjemmetilstand timeout" }
+    },
+    "select": {
+      "operation_selection": {
+        "name": "Driftindstilling",
+        "state": {
+          "standby": "Standby",
+          "automatic": "Automatik",
+          "manual": "Manuel",
+          "week_program": "Ugeprogram",
+          "away": "Rejse",
+          "summer": "Sommer",
+          "fireplace": "Brændeovn",
+          "night": "Nat"
+        }
+      },
+      "fan_level_selection": {
+        "name": "Ventilatorindstilling",
+        "state": {
+          "0": "Niveau 0",
+          "1": "Niveau 1",
+          "2": "Niveau 2",
+          "3": "Niveau 3",
+          "4": "Niveau 4"
+        }
+      },
+      "week_program_selection": {
+        "name": "Ugeprogram",
+        "state": {
+          "0": "Ugeprogram 1",
+          "1": "Ugeprogram 2",
+          "2": "Ugeprogram 3",
+          "3": "Ugeprogram 4",
+          "4": "Ugeprogram 5",
+          "5": "Ugeprogram 6",
+          "6": "Ugeprogram 7",
+          "7": "Ugeprogram 8",
+          "8": "Ugeprogram 9",
+          "9": "Ugeprogram 10",
+          "10": "Ugeprogram 11"
+        }
+      },
+      "boost_operation_selection": {
+        "name": "Boost-tilstand indstilling",
+        "state": {
+          "level_2": "Niveau 2",
+          "level_3": "Niveau 3",
+          "level_4": "Niveau 4"
+        }
+      },
+      "eco_operation_selection": {
+        "name": "Eco-tilstand indstilling",
+        "state": {
+          "standby": "Standby",
+          "level_1": "Niveau 1",
+          "level_2": "Niveau 2"
+        }
+      },
+      "home_operation_selection": {
+        "name": "Hjemmetilstand indstilling",
+        "state": {
+          "automatic": "Automatik",
+          "level_1": "Niveau 1",
+          "level_2": "Niveau 2",
+          "level_3": "Niveau 3",
+          "week_program": "Ugeprogram"
+        }
+      },
+      "default_operation_selection": {
+        "name": "Standardtilstand indstilling",
+        "state": {
+          "automatic": "Automatik",
+          "level_1": "Niveau 1",
+          "level_2": "Niveau 2",
+          "level_3": "Niveau 3",
+          "week_program": "Ugeprogram"
+        }
+      }
+    },
+    "sensor": {
+      "operation_mode": {
+        "name": "Drifttilstand",
+        "state": {
+          "0": "Standby",
+          "1": "Manuel",
+          "2": "Automatik",
+          "3": "Ugeprogram",
+          "4": "Servoflow",
+          "5": "Bortrejst",
+          "6": "Sommertilstand",
+          "7": "DI tilsidesættelse",
+          "8": "Hygrostat tilsidesættelse",
+          "9": "Brændeovnstilstand",
+          "10": "Installatør",
+          "11": "Fejlsikret 1",
+          "12": "Fejlsikret 2",
+          "13": "Fejlsikkerhed fra",
+          "14": "Afrimning fra",
+          "15": "Afrimning",
+          "16": "Nattilstand"
+        }
+      },
+      "alarm": {
+        "name": "Alarm",
+        "state": {
+          "0": "Ingen",
+          "1": "Udsugningsventilator alarm",
+          "2": "Indblæsningsventilator alarm",
+          "3": "Bypass alarm",
+          "4": "T1 alarm",
+          "5": "T2 alarm",
+          "6": "T3 alarm",
+          "7": "T4 alarm",
+          "8": "T5 alarm",
+          "9": "RH alarm",
+          "10": "Udendørs13 alarm",
+          "11": "Indblæsning5 alarm",
+          "12": "Brand alarm",
+          "13": "Kommunikations alarm",
+          "14": "Brand Termostat alarm",
+          "15": "Høj Vandstand alarm"
+        }
+      },
+      "adaptive_state": {
+        "name": "Adaptiv tilstand",
+        "state": {
+          "none": "Ingen",
+          "automatic": "Automatisk",
+          "away": "Ude-tilstand",
+          "boost": "Boost-tilstand",
+          "eco": "Eco-tilstand",
+          "home": "Hjemmetilstand",
+          "level_1": "Niveau 1",
+          "level_2": "Niveau 2",
+          "level_3": "Niveau 3",
+          "level_4": "Niveau 4",
+          "manuel": "Manuel",
+          "night": "Nattetilstand",
+          "standby": "Standby",
+          "summer": "Sommertilstand",
+          "week_program": "Ugeskema"
+        }
+      },
+      "fan_level": { "name": "Ventilatorniveau" },
+      "fan1_speed": { "name": "Ventilatorhastighed 1" },
+      "fan2_speed": { "name": "Ventilatorhastighed 2" },
+      "humidity": { "name": "Luftfugtighed" },
+      "air_quality": { "name": "Luftkvalitet" },
+      "exhaust_temperature": { "name": "Udblæsningstemperatur" },
+      "extract_temperature": { "name": "Udsugningstemperatur" },
+      "supply_temperature": { "name": "Indblæsningstemperatur" },
+      "outdoor_temperature": { "name": "Udeluftstemperatur" },
+      "room_temperature": { "name": "Rumtemperatur" },
+      "filter_remain": { "name": "Filter tilbage" },
+      "filter_remain_level": { "name": "Filter tilbage niveau" },
+      "work_time": { "name": "Drifttid" },
+      "internal_preheater_dutycycle": { "name": "Forvarmer driftscyklus"}
+    },
+    "switch": {
+      "away_mode": { "name": "Rejsetilstand" },
+      "night_mode": { "name": "Nattilstand" },
+      "fireplace_mode": { "name": "Brændeovnstilstand" },
+      "manual_bypass_mode": { "name": "Manuel bypasstilstand" },
+      "summer_mode": { "name": "Sommertilstand" },
+      "sensor_filtering": { "name": "Sensorfiltrering" },
+      "boost_mode": { "name": "Boost-tilstand" },
+      "eco_mode": { "name": "Eco-tilstand" },
+      "home_mode": { "name": "Hjemmetilstand" }
+    },
+    "text": {
+      "night_mode_start_time": { "name": "Nattilstand start tid" },
+      "night_mode_end_time": { "name": "Nattilstand slut tid" }
+    }
+  },
+  "selector": {
+    "operations": {
+      "options": {
+        "standby": "Standby",
+        "automatic": "Automatik",
+        "manual": "Manuel",
+        "week_program": "Ugeprogram"
+      }
+    },
+    "fan_levels": {
+      "options": {
+        "0": "Niveau 0",
+        "1": "Niveau 1",
+        "2": "Niveau 2",
+        "3": "Niveau 3",
+        "4": "Niveau 4"
+      }
+    },
+    "week_program_selections": {
+      "options": {
+        "0": "Ugeprogram 1",
+        "1": "Ugeprogram 2",
+        "2": "Ugeprogram 3",
+        "3": "Ugeprogram 4",
+        "4": "Ugeprogram 5",
+        "5": "Ugeprogram 6",
+        "6": "Ugeprogram 7",
+        "7": "Ugeprogram 8",
+        "8": "Ugeprogram 9",
+        "9": "Ugeprogram 10",
+        "10": "Ugeprogram 11"
+      }
+    }
+  },
+  "services": {
+    "set_state": {
+      "name": "Sæt tilstand",
+      "description": "Kontroller tilstande på ventilationsenheden med et action kald.",
+      "fields": {
+        "operation_selection": {
+          "name": "Driftindstilling",
+          "description": "Vælg den ønskede drifttilstand."
+          },
+        "fan_level_selection": {
+          "name": "Ventilatorindstilling",
+          "description": "Vælg det ønskede ventilatorniveau."
+        },
+        "away_mode": {
+          "name": "Rejsetilstand",
+          "description": "Slå rejsetilstand til eller fra."
+        },
+        "summer_mode": {
+          "name": "Sommertilstand",
+          "description": "Slå sommertilstand til eller fra."
+        },
+        "fireplace_mode": {
+          "name": "Brændeovnstilstand",
+          "description": "Slå brændeovnstilstand til eller fra. Brændeovnstilstand vil være til i en begrænset tidsperiode."
+        },
+        "manual_bypass_mode": {
+          "name": "Manuel bypasstilstand",
+          "description": "Slå manuel bypasstilstand til eller fra."
+        }
+      }
+    },
+    "set_configuration": {
+      "name": "Sæt konfiguration",
+      "description": "Juster konfigurationsindstillingerne for Dantherm-enheden.",
+      "fields": {
+        "bypass_minimum_temperature": {
+          "name": "Bypass minimum temperatur",
+          "description": "Indstil den minimale temperatur for bypass-drift."
+        },
+        "bypass_maximum_temperature": {
+          "name": "Bypass maksimum temperatur",
+          "description": "Indstil den maksimale temperatur for bypass-drift."
+        },
+        "filter_lifetime": {
+          "name": "Filter levetid",
+          "description": "Indstil filterets levetid i dage."
+        },
+        "manual_bypass_duration": {
+          "name": "Manuel bypass varighed",
+          "description": "Indstil varigheden for manuel bypass-tilstand i minutter."
+        },
+        "night_mode": {
+          "name": "Nattilstand",
+          "description": "Aktiver eller deaktiver nattilstand."
+        },
+        "night_mode_start_time": {
+          "name": "Nattilstand starttid",
+          "description": "Indstil starttidspunktet for nattilstand (TT:MM)."
+        },
+        "night_mode_end_time": {
+          "name": "Nattilstand sluttid",
+          "description": "Indstil sluttidspunktet for nattilstand (TT:MM)."
+        },
+        "week_program_selection": {
+          "name": "Ugeprogram",
+          "description": "Vælg det aktive ugeprogram."
+        }
+      }
+    },
+    "filter_reset": {
+      "name": "Nulstil filter",
+      "description": "Nulstil filterets resterende dage til dets filterlevetid."
+    },
+    "alarm_reset": {
+      "name": "Nulstil alarm",
+      "description": "Nulstil første ventende alarm."
+    }
+  },
+  "exceptions": {
+    "invalid_timeformat": {
+      "message": "Ugyldigt tidsformat. Brug TT:MM."
+    },
+    "invalid_filter_lifetime": {
+      "message": "Ugyldig filter levetid. Brug værdier mellem 0 og 360 dage."
+    },
+    "pymodbus_version": {
+      "message": "Dantherm-integrationen kræver pymodbus version %s eller højere, men %s er installeret"
+    }
+  }
+}

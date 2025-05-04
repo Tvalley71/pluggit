@@ -1,0 +1,348 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connexion Modbus",
+        "data": {
+          "host": "Adresse IP de la VMC",
+          "name": "Préfixe à utiliser pour les entités",
+          "port": "Port TCP de de la VMC",
+          "scan_interval": "Fréquence d'interrogation des registres modbus (secondes)"
+        }
+      }
+    },
+    "error": {
+      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+    },
+    "abort": {
+      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+    }
+  },
+  "options": {
+    "step": {
+        "init": {
+            "title": "Configuration de l'intégration Dantherm",
+            "data": {
+                "boost_mode_trigger": "Entité de déclenchement du mode Boost",
+                "eco_mode_trigger": "Entité de déclenchement du mode Eco",
+                "home_mode_trigger": "Entité de déclenchement du mode Maison"
+            }
+        }
+    },
+    "error": {
+        "invalid_entity": "ID d'entité invalide. Veuillez entrer un capteur binaire ou un booléen d'entrée valide."
+    }
+  },
+  "entity": {
+    "button": {
+      "filter_reset": { "name": "Réinitialiser durée de vie filtre" },
+      "alarm_reset": { "name": "Réinitialiser alerte active" }
+    },
+    "cover": {
+      "bypass_damper": { "name": "Bypass" }
+    },
+    "number": {
+      "filter_lifetime": { "name": "Durée de vie filtre" },
+      "bypass_minimum_temperature": { "name": "Bypass température minimale" },
+      "bypass_maximum_temperature": { "name": "Bypass température maximale" },
+      "manual_bypass_duration": { "name": "Durée du bypass manuel" },
+      "boost_mode_timeout": { "name": "Délai d'expiration du mode Boost" },
+      "eco_mode_timeout": { "name": "Délai d'expiration du mode Eco" },
+      "home_mode_timeout": { "name": "Délai d'expiration du mode Maison" }
+    },
+    "select": {
+      "operation_selection": {
+        "name": "Sélection mode",
+        "state": {
+          "standby": "Arrêt",
+          "automatic": "Auto",
+          "manual": "Manuel",
+          "week_program": "Programme hebdo",
+          "away": "Absent",
+          "summer": "Été",
+          "fireplace": "Cheminée",
+          "night": "Nuit"
+        }
+      },
+      "fan_level_selection": {
+        "name": "Vitesse ventilation",
+        "state": {
+          "0": "Niveau 0",
+          "1": "Niveau 1",
+          "2": "Niveau 2",
+          "3": "Niveau 3",
+          "4": "Niveau 4"
+        }
+      },
+      "week_program_selection": {
+        "name": "Programme hebdo",
+        "state": {
+          "0": "Programme hebdo 1",
+          "1": "Programme hebdo 2",
+          "2": "Programme hebdo 3",
+          "3": "Programme hebdo 4",
+          "4": "Programme hebdo 5",
+          "5": "Programme hebdo 6",
+          "6": "Programme hebdo 7",
+          "7": "Programme hebdo 8",
+          "8": "Programme hebdo 9",
+          "9": "Programme hebdo 10",
+          "10": "Programme hebdo 11"
+        }
+      },
+      "boost_operation_selection": {
+        "name": "Sélection mode Boost",
+        "state": {
+          "level_2": "Niveau 2",
+          "level_3": "Niveau 3",
+          "level_4": "Niveau 4"
+        }
+      },
+      "eco_operation_selection": {
+        "name": "Sélection mode Eco",
+        "state": {
+          "standby": "Arrêt",
+          "level_1": "Niveau 1",
+          "level_2": "Niveau 2"
+        }
+      },
+      "home_operation_selection": {
+        "name": "Sélection mode Maison",
+        "state": {
+          "automatic": "Auto",
+          "level_1": "Niveau 1",
+          "level_2": "Niveau 2",
+          "level_3": "Niveau 3",
+          "week_program": "Programme hebdo"
+        }
+      },
+      "default_operation_selection": {
+        "name": "Sélection mode par défaut",
+        "state": {
+          "automatic": "Auto",
+          "level_1": "Niveau 1",
+          "level_2": "Niveau 2",
+          "level_3": "Niveau 3",
+          "week_program": "Programme hebdo"
+        }
+      }
+    },
+    "sensor": {
+      "operation_mode": {
+        "name": "Mode",
+        "state": {
+          "0": "Arrêt",
+          "1": "Mode manuel",
+          "2": "Mode auto",
+          "3": "Mode programme hebdo",
+          "4": "Mode asservi",
+          "5": "Mode absent",
+          "6": "Mode été",
+          "7": "Ignorer DI",
+          "8": "Ignorer hygrostat",
+          "9": "Mode allumage cheminée",
+          "10": "Mode installateur",
+          "11": "Mode sans échec 1",
+          "12": "Mode sans échec 2",
+          "13": "Fail Off",
+          "14": "Mode hors gel désactivé",
+          "15": "Mode hors gel",
+          "16": "Mode nuit"
+        }
+      },
+      "alarm": {
+        "name": "Alerte active",
+        "state": {
+          "0": "Aucune",
+          "1": "Alerte ventilateur extraction",
+          "2": "Alerte ventilateur pulsion",
+          "3": "Alerte bypass",
+          "4": "Alerte T1",
+          "5": "Alerte T2",
+          "6": "Alerte T3",
+          "7": "Alerte T4",
+          "8": "Alerte T5",
+          "9": "Alerte humidité",
+          "10": "Alarme extérieur 13",
+          "11": "Alerte pulsion 5",
+          "12": "Alerte feu",
+          "13": "Alerte communication",
+          "14": "Alerte thermostat feu",
+          "15": "Alerte niveau d'eau élevé"
+        }
+      },
+      "adaptive_state": {
+        "name": "État adaptatif",
+        "state": {
+          "none": "Aucune",
+          "automatic": "Auto",
+          "away": "Mode absent",
+          "boost": "Mode Boost",
+          "eco": "Mode Eco",
+          "home": "Mode Maison",
+          "level_1": "Niveau 1",
+          "level_2": "Niveau 2",
+          "level_3": "Niveau 3",
+          "level_4": "Niveau 4",
+          "manuel": "Manuel",
+          "night": "Mode nuit",
+          "standby": "Arrêt",
+          "summer": "Mode été",
+          "week_program": "Programme hebdo"
+        }
+      },
+      "fan_level": { "name": "Niveau ventilation" },
+      "fan1_speed": { "name": "Vitesse ventilateur 1" },
+      "fan2_speed": { "name": "Vitesse ventilateur 2" },
+      "humidity": { "name": "Humidité" },
+      "air_quality": { "name": "Qualité de l'air" },
+      "exhaust_temperature": { "name": "Température expulsion" },
+      "extract_temperature": { "name": "Température extraction" },
+      "supply_temperature": { "name": "Température pulsion" },
+      "outdoor_temperature": { "name": "Température extérieure" },
+      "room_temperature": { "name": "Température ambiante" },
+      "filter_remain": { "name": "Remplacement filtre dans" },
+      "filter_remain_level": { "name": "Filtre de remplacement dans le niveau" },
+      "work_time": { "name": "Temps de fonctionnement" },
+      "internal_preheater_dutycycle": { "name": "Cycle de service du préchauffeur"}
+    },
+    "switch": {
+      "away_mode": { "name": "Mode absent" },
+      "night_mode": { "name": "Mode nuit" },
+      "fireplace_mode": { "name": "Mode allumage cheminée" },
+      "manual_bypass_mode": { "name": "Mode bypass manuel" },
+      "summer_mode": { "name": "Mode été" },
+      "sensor_filtering": { "name": "Filtrage des capteurs" },
+      "boost_mode": { "name": "Mode Boost" },
+      "eco_mode": { "name": "Mode Eco" },
+      "home_mode": { "name": "Mode Maison" }
+    },
+    "text": {
+      "night_mode_start_time": { "name": "Heure de début du mode nuit" },
+      "night_mode_end_time": { "name": "Heure de fin du mode nuit" }
+    }
+  },
+  "selector": {
+    "operations": {
+      "options": {
+        "standby": "Arrêt",
+        "automatic": "Auto",
+        "manual": "Manuel",
+        "week_program": "Programme hebdo"
+      }
+    },
+    "fan_levels": {
+      "options": {
+        "0": "Niveau 0",
+        "1": "Niveau 1",
+        "2": "Niveau 2",
+        "3": "Niveau 3",
+        "4": "Niveau 4"
+      }
+    },
+    "week_program_selections": {
+      "options": {
+        "0": "Programme hebdo 1",
+        "1": "Programme hebdo 2",
+        "2": "Programme hebdo 3",
+        "3": "Programme hebdo 4",
+        "4": "Programme hebdo 5",
+        "5": "Programme hebdo 6",
+        "6": "Programme hebdo 7",
+        "7": "Programme hebdo 8",
+        "8": "Programme hebdo 9",
+        "9": "Programme hebdo 10",
+        "10": "Programme hebdo 11"
+      }
+    }
+  },
+  "services": {
+    "set_state": {
+      "name": "Définir l'état",
+      "description": "Contrôlez l'état de l'unité de ventilation avec un appel d'action.",
+      "fields": {
+        "operation_selection": {
+          "name": "Sélection mode",
+          "description": "Sélectionnez le mode d'opération souhaité."
+        },
+        "fan_level_selection": {
+          "name": "Vitesse ventilation",
+          "description": "Sélectionnez le niveau de ventilation souhaité."
+        },
+        "away_mode": {
+          "name": "Mode absent",
+          "description": "Activez ou désactivez le mode absent."
+        },
+        "summer_mode": {
+          "name": "Mode été",
+          "description": "Activez ou désactivez le mode été."
+        },
+        "fireplace_mode": {
+          "name": "Mode cheminée",
+          "description": "Activez ou désactivez le mode cheminée. Le mode cheminée restera activé pendant une période limitée."
+        },
+        "manual_bypass_mode": {
+          "name": "Mode bypass manuel",
+          "description": "Activez ou désactivez le mode de contournement manuel."
+        }
+      }
+    },
+    "set_configuration": {
+      "name": "Définir la configuration",
+      "description": "Ajustez les paramètres de configuration de l'appareil Dantherm.",
+      "fields": {
+        "bypass_minimum_temperature": {
+          "name": "Température minimale de dérivation",
+          "description": "Définissez la température minimale pour le fonctionnement de la dérivation."
+        },
+        "bypass_maximum_temperature": {
+          "name": "Température maximale de dérivation",
+          "description": "Définissez la température maximale pour le fonctionnement de la dérivation."
+        },
+        "filter_lifetime": {
+          "name": "Durée de vie du filtre",
+          "description": "Définissez la durée de vie du filtre en jours."
+        },
+        "manual_bypass_duration": {
+          "name": "Durée de la dérivation manuelle",
+          "description": "Définissez la durée du mode de dérivation manuelle en minutes."
+        },
+        "night_mode": {
+          "name": "Mode nuit",
+          "description": "Activer ou désactiver le mode nuit."
+        },
+        "night_mode_start_time": {
+          "name": "Heure de début du mode nuit",
+          "description": "Définissez l'heure de début du mode nuit (HH:MM)."
+        },
+        "night_mode_end_time": {
+          "name": "Heure de fin du mode nuit",
+          "description": "Définissez l'heure de fin du mode nuit (HH:MM)."
+        },
+        "week_program_selection": {
+          "name": "Sélection du programme hebdomadaire",
+          "description": "Sélectionnez le programme hebdomadaire actif."
+        }
+      }
+    },
+    "filter_reset": {
+      "name": "Réinitialisation du filtre",
+      "description": "Réinitialisez les jours restants du filtre à sa durée de vie."
+    },
+    "alarm_reset": {
+      "name": "Réinitialisation de l'alarme",
+      "description": "Réinitialisez la première alarme en attente."
+    }
+  },
+  "exceptions": {
+    "invalid_timeformat": {
+      "message": "Format de l'heure invalide. Utilisez HH:MM."
+    },
+    "invalid_filter_lifetime": {
+      "message": "Durée de vie du filtre invalide. Utilisez des valeurs entre 0 et 360 jours."
+    },
+    "pymodbus_version": {
+      "message": "L'intégration Dantherm nécessite pymodbus version %s ou supérieure, mais la version %s est installée"
+    }
+  }
+}

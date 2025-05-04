@@ -1,0 +1,348 @@
+{
+  "config": {
+    "step": {
+        "user": {
+            "title": "Modbus connection",
+            "data": {
+                "host": "Enter ip-address of your unit",
+                "name": "Enter prefix for the device entities",
+                "port": "Enter TCP port on which to connect to the device",
+                "scan_interval": "Enter polling frequency of the modbus registers in seconds"
+            }
+        }
+    },
+    "error": {
+        "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+    },
+    "abort": {
+        "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+    }
+  },
+  "options": {
+    "step": {
+        "init": {
+            "title": "Dantherm Integration Options",
+            "data": {
+                "boost_mode_trigger": "Boost Mode Trigger Entity",
+                "eco_mode_trigger": "Eco Mode Trigger Entity",
+                "home_mode_trigger": "Home Mode Trigger Entity"
+            }
+        }
+    },
+    "error": {
+        "invalid_entity": "Invalid entity ID. Please enter a valid binary sensor or input boolean."
+    }
+  },
+  "entity": {
+    "button": {
+      "filter_reset": { "name": "Reset Filter" },
+      "alarm_reset": { "name": "Reset Alarm" }
+    },
+    "cover": {
+      "bypass_damper": { "name": "Bypass Damper" }
+    },
+    "number": {
+      "filter_lifetime": { "name": "Filter Lifetime" },
+      "bypass_minimum_temperature": { "name": "Bypass Minimum Temperature" },
+      "bypass_maximum_temperature": { "name": "Bypass Maximum Temperature" },
+      "manual_bypass_duration": { "name": "Manual Bypass Duration" },
+      "boost_mode_timeout": { "name": "Boost Mode Timeout" },
+      "eco_mode_timeout": { "name": "Eco Mode Timeout" },
+      "home_mode_timeout": { "name": "Home Mode Timeout" }
+    },
+    "select": {
+      "operation_selection": {
+        "name": "Operation Selection",
+        "state": {
+          "standby": "Standby",
+          "automatic": "Automatic",
+          "manual": "Manual",
+          "week_program": "Week Program",
+          "away": "Away",
+          "summer": "Summer",
+          "fireplace": "Fireplace",
+          "night": "Night"
+        }
+      },
+      "fan_level_selection": {
+        "name": "Fan Selection",
+        "state": {
+          "0": "Level 0",
+          "1": "Level 1",
+          "2": "Level 2",
+          "3": "Level 3",
+          "4": "Level 4"
+        }
+      },
+      "week_program_selection": {
+        "name": "Week Program",
+        "state": {
+          "0": "Week Program 1",
+          "1": "Week Program 2",
+          "2": "Week Program 3",
+          "3": "Week Program 4",
+          "4": "Week Program 5",
+          "5": "Week Program 6",
+          "6": "Week Program 7",
+          "7": "Week Program 8",
+          "8": "Week Program 9",
+          "9": "Week Program 10",
+          "10": "Week Program 11"
+        }
+      },
+      "boost_operation_selection": {
+        "name": "Boost Operation Selection",
+        "state": {
+          "level_2": "Level 2",
+          "level_3": "Level 3",
+          "level_4": "Level 4"
+        }
+      },
+      "eco_operation_selection": {
+        "name": "Eco Operation Selection",
+        "state": {
+          "standby": "Standby",
+          "level_1": "Level 1",
+          "level_2": "Level 2"
+        }
+      },
+      "home_operation_selection": {
+        "name": "Home Operation Selection",
+        "state": {
+          "automatic": "Automatic",
+          "level_1": "Level 1",
+          "level_2": "Level 2",
+          "level_3": "Level 3",
+          "week_program": "Week Program"
+        }
+      },
+      "default_operation_selection": {
+        "name": "Default Operation Selection",
+        "state": {
+          "automatic": "Automatic",
+          "level_1": "Level 1",
+          "level_2": "Level 2",
+          "level_3": "Level 3",
+          "week_program": "Week Program"
+        }
+      }
+    },
+    "sensor": {
+      "operation_mode": {
+        "name": "Operation Mode",
+        "state": {
+          "0": "Standby",
+          "1": "Manual",
+          "2": "Automatic",
+          "3": "Week program",
+          "4": "Servoflow",
+          "5": "Away",
+          "6": "Summer",
+          "7": "DI override",
+          "8": "Hygrostat override",
+          "9": "Fireplace",
+          "10": "Installer",
+          "11": "Fail Safe 1",
+          "12": "Fail Safe 2",
+          "13": "Fail Off",
+          "14": "Defrost Off",
+          "15": "Defrost",
+          "16": "Night"
+        }
+      },
+      "alarm": {
+        "name": "Alarm",
+        "state": {
+          "0": "None",
+          "1": "Exhaust FAN Alarm",
+          "2": "Supply FAN Alarm",
+          "3": "Bypass Alarm",
+          "4": "T1 Alarm",
+          "5": "T2 Alarm",
+          "6": "T3 Alarm",
+          "7": "T4 Alarm",
+          "8": "T5 Alarm",
+          "9": "RH Alarm",
+          "10": "Outdoor Alarm",
+          "11": "Supply Alarm",
+          "12": "Fire Alarm",
+          "13": "Communication Alarm",
+          "14": "Fire Termostat Alarm",
+          "15": "High Waterlevel Alarm"
+        }
+      },
+      "adaptive_state": {
+        "name": "Adaptive State",
+        "state": {
+          "none": "None",
+          "automatic": "Automatic",
+          "away": "Away Mode",
+          "boost": "Boost Mode",
+          "eco": "Eco Mode",
+          "home": "Home Mode",
+          "level_1": "Level 1",
+          "level_2": "Level 2",
+          "level_3": "Level 3",
+          "level_4": "Level 4",
+          "manuel": "Manual",
+          "night": "Night Mode",
+          "standby": "Standby",
+          "summer": "Summer Mode",
+          "week_program": "Week program"
+        }
+      },
+      "fan_level": { "name": "Fan Level" },
+      "fan1_speed": { "name": "Fan Speed 1" },
+      "fan2_speed": { "name": "Fan Speed 2" },
+      "humidity": { "name": "Humidity" },
+      "air_quality": { "name": "Air Quality" },
+      "exhaust_temperature": { "name": "Exhaust Temperature" },
+      "extract_temperature": { "name": "Extract Temperature" },
+      "supply_temperature": { "name": "Supply Temperature" },
+      "outdoor_temperature": { "name": "Outdoor Temperature" },
+      "room_temperature": { "name": "Room Temperature" },
+      "filter_remain": { "name": "Filter Remain" },
+      "filter_remain_level": { "name": "Filter Remain Level" },
+      "work_time": { "name": "Work Time" },
+      "internal_preheater_dutycycle": { "name": "Preheater Dutycycle"}
+    },
+    "switch": {
+      "away_mode": { "name": "Away Mode" },
+      "night_mode": { "name": "Night Mode" },
+      "fireplace_mode": { "name": "Fireplace Mode" },
+      "manual_bypass_mode": { "name": "Manual Bypass Mode" },
+      "summer_mode": { "name": "Summer Mode" },
+      "sensor_filtering": { "name": "Sensor Filtering" },
+      "boost_mode": { "name": "Boost Mode" },
+      "eco_mode": { "name": "Eco Mode" },
+      "home_mode": { "name": "Home Mode" }
+    },
+    "text": {
+      "night_mode_start_time": { "name": "Night Mode Start Time" },
+      "night_mode_end_time": { "name": "Night Mode End Time" }
+    }
+  },
+  "selector": {
+    "operations": {
+      "options": {
+        "standby": "Standby",
+        "automatic": "Automatic",
+        "manual": "Manual",
+        "week_program": "Week Program"
+      }
+    },
+    "fan_levels": {
+      "options": {
+        "0": "Level 0",
+        "1": "Level 1",
+        "2": "Level 2",
+        "3": "Level 3",
+        "4": "Level 4"
+      }
+    },
+    "week_program_selections": {
+      "options": {
+        "0": "Week Program 1",
+        "1": "Week Program 2",
+        "2": "Week Program 3",
+        "3": "Week Program 4",
+        "4": "Week Program 5",
+        "5": "Week Program 6",
+        "6": "Week Program 7",
+        "7": "Week Program 8",
+        "8": "Week Program 9",
+        "9": "Week Program 10",
+        "10": "Week Program 11"
+      }
+    }
+  },
+  "services": {
+    "set_state": {
+      "name": "Set state",
+      "description": "Control the state of the ventilation unit with an action call.",
+      "fields": {
+        "operation_selection": {
+          "name": "Operation Selection",
+          "description": "Select the desired operation mode."
+        },
+        "fan_level_selection": {
+          "name": "Fan Selection",
+          "description": "Select the desired fan level."
+        },
+        "away_mode": {
+          "name": "Away Mode",
+          "description": "Turn away mode on or off."
+        },
+        "summer_mode": {
+          "name": "Summer Mode",
+          "description": "Turn summer mode on or off."
+        },
+        "fireplace_mode": {
+          "name": "Fireplace Mode",
+          "description": "Turn fireplace mode on or off. The fireplace mode will be on for a limited time period."
+        },
+        "manual_bypass_mode": {
+          "name": "Manual Bypass Mode",
+          "description": "Turn manual bypass mode on or off."
+        }
+      }
+    },
+    "set_configuration": {
+      "name": "Set configuration",
+      "description": "Adjust the configuration settings for the Dantherm device.",
+      "fields": {
+        "bypass_minimum_temperature": {
+          "name": "Bypass Minimum Temperature",
+          "description": "Set the minimum temperature for bypass operation."
+        },
+        "bypass_maximum_temperature": {
+          "name": "Bypass Maximum Temperature",
+          "description": "Set the maximum temperature for bypass operation."
+        },
+        "filter_lifetime": {
+          "name": "Filter Lifetime",
+          "description": "Set the lifetime of the filter in days."
+        },
+        "manual_bypass_duration": {
+          "name": "Manual Bypass Duration",
+          "description": "Set the duration for manual bypass mode in minutes."
+        },
+        "night_mode": {
+          "name": "Night Mode",
+          "description": "Enable or disable night mode."
+        },
+        "night_mode_start_time": {
+          "name": "Night Mode Start Time",
+          "description": "Set the start time for night mode (HH:MM)."
+        },
+        "night_mode_end_time": {
+          "name": "Night Mode End Time",
+          "description": "Set the end time for night mode (HH:MM)."
+        },
+        "week_program_selection": {
+          "name": "Week Program Selection",
+          "description": "Select the active week program."
+        }
+      }
+    },
+    "filter_reset": {
+      "name": "Filter reset",
+      "description": "Reset the filter remaining days to its filter lifetime."
+    },
+    "alarm_reset": {
+      "name": "Alarm reset",
+      "description": "Reset first pending alarm."
+    }
+  },
+  "exceptions": {
+    "invalid_timeformat": {
+      "message": "Invalid time format. Use HH:MM."
+    },
+    "invalid_filter_lifetime": {
+      "message": "Invalid filter lifetime. Use values between 0 to 360 days."
+    },
+    "pymodbus_version": {
+      "message": "Dantherm integration requires pymodbus version %s or newer, but %s is installed"
+    }
+  }
+}
