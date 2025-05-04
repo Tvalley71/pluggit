@@ -3,67 +3,74 @@ name: Release Workflow
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      test_tag:
+        description: 'Test version to simulate (e.g. 0.0.0-test)'
+        required: true
+        default: '0.0.0-test'
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+
     steps:
       - name: 📥 Checkout the repository
         uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
-      - name: 🔢 Set version number from GitHub release tag
+      - name: 🔢 Set version number
         run: |
-          VERSION="${{ github.event.release.tag_name }}"
+          VERSION="${{ github.event.inputs.test_tag || github.event.release.tag_name }}"
+          echo "Using version: $VERSION"
           jq --arg version "$VERSION" '.version = $version' \
             "${{ github.workspace }}/custom_components/pluggit/manifest.json" > tmp \
             && mv -f tmp "${{ github.workspace }}/custom_components/pluggit/manifest.json"
 
-      - name: 👀 Validate that manifest version is correct
+      - name: ✅ Validate that manifest version is correct
         run: |
+          VERSION="${{ github.event.inputs.test_tag || github.event.release.tag_name }}"
           manifestversion=$(jq -r '.version' ${{ github.workspace }}/custom_components/pluggit/manifest.json)
-          if [ "$manifestversion" != "${{ github.event.release.tag_name }}" ]; then
-            echo "The version in manifest.json does not match the release tag"
-            echo "Manifest version: $manifestversion"
-            echo "Release tag: ${{ github.event.release.tag_name }}"
+          if [ "$manifestversion" != "$VERSION" ]; then
+            echo "Manifest version ($manifestversion) does not match expected tag ($VERSION)"
             exit 1
           fi
 
-#      - name: Set the Dantherm branch
-#        id: set-dantherm-branch
-#        run: |
-#          if [ "${{ github.event.release.prerelease }}" = "true" ]; then
-#            echo "Using dev branch for pre-release"
-#            echo "dantherm_branch=dev" >> $GITHUB_ENV
-#          else
-#            echo "Using main branch"
-#            echo "dantherm_branch=main" >> $GITHUB_ENV
-#          fi
-
-      - name: Set the Dantherm branch (manual override)
+      - name: 🌿 Set Dantherm branch
         run: echo "dantherm_branch=main" >> $GITHUB_ENV
 
-      - name: Checkout Dantherm repository
+      - name: 📥 Checkout Dantherm repository
         run: |
           git clone --branch ${{ env.dantherm_branch }} https://github.com/Tvalley71/dantherm.git dantherm
 
-      - name: Copy shared code files from the Dantherm integration
+      - name: 📋 Copy shared code files from Dantherm → Pluggit
         run: |
           rsync -av --exclude 'const.py' --exclude 'manifest.json' \
             dantherm/custom_components/dantherm/ \
             "${{ github.workspace }}/custom_components/pluggit/"
 
-      - name: 🔄 Replace integration name in services.yaml
+      - name: 🔧 Replace integration name in services.yaml
         run: |
-          sed -i 's/integration: dantherm/integration: pluggit/g' custom_components/pluggit/services.yaml
+          sed -i 's/integration: dantherm/integration: pluggit/g' custom_components/pluggit/services.yaml || echo "No replacement needed"
 
       - name: 📦 Create zip file for the integration
         run: |
           cd "${{ github.workspace }}/custom_components/pluggit"
           zip pluggit.zip -r ./
 
-      - name: 📤 Upload the zip file as a release asset
+      - name: 📤 Upload the zip file as a release asset (only on real release)
+        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v1
         with:
           files: "${{ github.workspace }}/custom_components/pluggit/pluggit.zip"
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: ✅ Commit integration files to repo
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add custom_components/pluggit/
+          git commit -m "🔄 Update Pluggit integration to version ${{ github.event.inputs.test_tag || github.event.release.tag_name }}" || echo "No changes to commit"
+          git push
