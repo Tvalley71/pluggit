@@ -86,3 +86,4 @@ jobs:
             git push origin ${{ env.target_branch }}
           else
             echo "No changes to commit or push"
+          fi
