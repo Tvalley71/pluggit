@@ -5,10 +5,10 @@ on:
     types: [published]
   workflow_dispatch:
     inputs:
-      test_tag:
-        description: 'Test version to simulate (e.g. 0.0.0-test)'
+      version:
+        description: 'Version number to release or simulate (e.g. 0.4.11)'
         required: true
-        default: '0.0.0-test'
+        default: '0.0.0'
 
 jobs:
   release:
@@ -16,25 +16,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: 🧠 Define variables
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "version=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+            echo "target_branch=main" >> $GITHUB_ENV
+          else
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+            echo "target_branch=test" >> $GITHUB_ENV
+          fi
+
       - name: 📥 Checkout the repository
         uses: actions/checkout@v2
         with:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          ref: ${{ env.target_branch }}
 
       - name: 🔢 Set version number
         run: |
-          VERSION="${{ github.event.inputs.test_tag || github.event.release.tag_name }}"
-          echo "Using version: $VERSION"
-          jq --arg version "$VERSION" '.version = $version' \
+          echo "Using version: $version"
+          jq --arg version "$version" '.version = $version' \
             "${{ github.workspace }}/custom_components/pluggit/manifest.json" > tmp \
             && mv -f tmp "${{ github.workspace }}/custom_components/pluggit/manifest.json"
 
-      - name: ✅ Validate that manifest version is correct
+      - name: ✅ Validate manifest version
         run: |
-          VERSION="${{ github.event.inputs.test_tag || github.event.release.tag_name }}"
           manifestversion=$(jq -r '.version' ${{ github.workspace }}/custom_components/pluggit/manifest.json)
-          if [ "$manifestversion" != "$VERSION" ]; then
-            echo "Manifest version ($manifestversion) does not match expected tag ($VERSION)"
+          if [ "$manifestversion" != "$version" ]; then
+            echo "Manifest version ($manifestversion) does not match expected version ($version)"
             exit 1
           fi
 
@@ -45,32 +54,35 @@ jobs:
         run: |
           git clone --branch ${{ env.dantherm_branch }} https://github.com/Tvalley71/dantherm.git dantherm
 
-      - name: 📋 Copy shared code files from Dantherm → Pluggit
+      - name: 📋 Copy shared code files
         run: |
           rsync -av --exclude 'const.py' --exclude 'manifest.json' \
             dantherm/custom_components/dantherm/ \
             "${{ github.workspace }}/custom_components/pluggit/"
 
-      - name: 🔧 Replace integration name in services.yaml
+      - name: 🔧 Replace integration name
         run: |
           sed -i 's/integration: dantherm/integration: pluggit/g' custom_components/pluggit/services.yaml || echo "No replacement needed"
 
-      - name: 📦 Create zip file for the integration
+      - name: 📦 Create zip file
         run: |
           cd "${{ github.workspace }}/custom_components/pluggit"
           zip pluggit.zip -r ./
 
-      - name: 📤 Upload the zip file as a release asset (only on real release)
+      - name: 📤 Upload release asset (only for real releases)
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v1
         with:
           files: "${{ github.workspace }}/custom_components/pluggit/pluggit.zip"
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
-      - name: ✅ Commit integration files to repo
+      - name: ✅ Commit and push (if changes)
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add custom_components/pluggit/
-          git commit -m "🔄 Update Pluggit integration to version ${{ github.event.inputs.test_tag || github.event.release.tag_name }}" || echo "No changes to commit"
-          git push
+          if ! git diff --cached --quiet; then
+            git commit -m "🔄 Update Pluggit integration to version $version"
+            git push origin ${{ env.target_branch }}
+          else
+            echo "No changes to commit or push"
