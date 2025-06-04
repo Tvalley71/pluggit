@@ -16,11 +16,6 @@ Known supported units:
 
 ### Installation
 
-> [!IMPORTANT]
-> Installation directly through HACS is not yet available because the integration is not yet official included into HACS. This process will take some time. In the meantime, please use the manual installation method or click the below **Open HACS Repository** button.
-
-<a href="https://my.home-assistant.io/redirect/hacs_repository/?owner=Tvalley71&repository=Pluggit&category=Integration"><img src="https://my.home-assistant.io/badges/hacs_repository.svg" alt="Open your Home Assistant instance and open a repository inside the Home Assistant Community Store." width="" height=""></a>
-
 #### Installation via HACS (Home Assistant Community Store)
 
 1. Ensure you have HACS installed and configured in your Home Assistant instance.
