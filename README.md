@@ -5,10 +5,7 @@ Home Assistant integration for Pluggit ventilation units
 > [!NOTE]
 > This integration is based on the Dantherm integration, as Pluggit and Dantherm ventilation units appear to share the same controller hardware. To avoid maintaining the code in two separate places, most of the code in this repository is copied from the Dantherm integration with each release. For more detailed documentation, please refer to the Dantherm integration [here](https://github.com/Tvalley71/dantherm).
 
-
-<a href="https://www.buymeacoffee.com/tvalley71" target="_blank">
-  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 45px;" >
-</a>
+<a href="https://www.buymeacoffee.com/tvalley71" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/yellow_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 
 ### Support
 
