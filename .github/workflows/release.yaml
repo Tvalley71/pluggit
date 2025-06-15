@@ -63,6 +63,15 @@ jobs:
       - name: 🔧 Replace integration name
         run: |
           sed -i 's/integration: dantherm/integration: pluggit/g' custom_components/pluggit/services.yaml || echo "No replacement needed"
+          
+      - name: 📝 Replace translation branding
+        run: |
+          for file in custom_components/pluggit/translations/*.json; do
+            sed -i \
+              -e 's/DANTHERM/PLUGGIT/g' \
+              -e 's/Dantherm/Pluggit/g' \
+              -e 's/dantherm/pluggit/g' "$file"
+          done
 
       - name: 📦 Create zip file
         run: |
