@@ -21,7 +21,7 @@
   "options": {
     "step": {
         "init": {
-            "title": "Configuration de l'intégration Dantherm",
+            "title": "Configuration de l'intégration Pluggit",
             "data": {
                 "boost_mode_trigger": "Entité de déclenchement du mode Boost",
                 "eco_mode_trigger": "Entité de déclenchement du mode Eco",
@@ -294,7 +294,7 @@
     },
     "set_configuration": {
       "name": "Définir la configuration",
-      "description": "Ajustez les paramètres de configuration de l'appareil Dantherm.",
+      "description": "Ajustez les paramètres de configuration de l'appareil Pluggit.",
       "fields": {
         "bypass_minimum_temperature": {
           "name": "Température minimale de dérivation",
@@ -347,7 +347,7 @@
       "message": "Durée de vie du filtre invalide. Utilisez des valeurs entre 0 et 360 jours."
     },
     "pymodbus_version": {
-      "message": "L'intégration Dantherm nécessite pymodbus version %s ou supérieure, mais la version %s est installée"
+      "message": "L'intégration Pluggit nécessite pymodbus version %s ou supérieure, mais la version %s est installée"
     }
   }
 }

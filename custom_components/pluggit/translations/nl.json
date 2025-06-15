@@ -21,7 +21,7 @@
   "options": {
     "step": {
         "init": {
-            "title": "Dantherm Integratie Configuratie",
+            "title": "Pluggit Integratie Configuratie",
             "data": {
                 "boost_mode_trigger": "Boost-modus Trigger Entiteit",
                 "eco_mode_trigger": "Eco-modus Trigger Entiteit",
@@ -294,7 +294,7 @@
     },
     "set_configuration": {
       "name": "Configuratie instellen",
-      "description": "Pas de configuratie-instellingen van het Dantherm-apparaat aan.",
+      "description": "Pas de configuratie-instellingen van het Pluggit-apparaat aan.",
       "fields": {
         "bypass_minimum_temperature": {
           "name": "Minimale bypass-temperatuur",
@@ -347,7 +347,7 @@
       "message": "Ongeldige filter levensduur. Gebruik waarden tussen 0 en 360 dagen."
     },
     "pymodbus_version": {
-      "message": "De Dantherm-integratie vereist pymodbus versie %s of hoger, maar versie %s is geïnstalleerd"
+      "message": "De Pluggit-integratie vereist pymodbus versie %s of hoger, maar versie %s is geïnstalleerd"
     }
   }
 }

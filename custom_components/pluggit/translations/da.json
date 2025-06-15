@@ -21,7 +21,7 @@
   "options": {
     "step": {
         "init": {
-        "title": "Indstillinger for Dantherm-integration",
+        "title": "Indstillinger for Pluggit-integration",
             "data": {
                 "boost_mode_trigger": "Boost-tilstand udløser entitet",
                 "eco_mode_trigger": "Eco-tilstand udløser entitet",
@@ -295,7 +295,7 @@
     },
     "set_configuration": {
       "name": "Sæt konfiguration",
-      "description": "Juster konfigurationsindstillingerne for Dantherm-enheden.",
+      "description": "Juster konfigurationsindstillingerne for Pluggit-enheden.",
       "fields": {
         "bypass_minimum_temperature": {
           "name": "Bypass minimumstemperatur",
@@ -348,7 +348,7 @@
       "message": "Ugyldig filterlevetid. Brug værdier mellem 0 og 360 dage."
     },
     "pymodbus_version": {
-      "message": "Dantherm-integrationen kræver pymodbus version %s eller højere, men %s er installeret"
+      "message": "Pluggit-integrationen kræver pymodbus version %s eller højere, men %s er installeret"
     }
   }
 }
