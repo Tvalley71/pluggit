@@ -14,7 +14,8 @@ You can [open issues directly](https://github.com/Tvalley71/pluggit/issues/new) 
 Known supported units:
 
 - AP310
-- 
+
+Please let me know if any other models are supported by clicking [here](https://github.com/Tvalley71/dantherm/discussions/new?category=general). Be sure to include both the model name and the unit type number. The unit type number can be found in the **Device Info** on the Integration page in Home Assistant, listed as "Unknown" followed by a number if the unit is not recognized by the integration.
 
 ### Installation
 
