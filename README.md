@@ -3,19 +3,134 @@
 Home Assistant integration for Pluggit ventilation units
 
 > [!NOTE]
-> This integration is based on the Dantherm integration, as Pluggit and Dantherm ventilation units appear to share the same controller hardware. To avoid maintaining the code in two separate places, most of the code in this repository is copied from the Dantherm integration with each release. For more detailed documentation, please refer to the Dantherm integration [here](https://github.com/Tvalley71/dantherm).
+> This integration is based on the [Dantherm integration](https://github.com/Tvalley71/dantherm) 👈, as Pluggit and Dantherm ventilation units appear to share the same controller hardware. To avoid maintaining the code in two separate places, most of the code in this repository is copied from the Dantherm integration with each release.
+
+<!-- START:shared-section -->
 
 <a href="https://www.buymeacoffee.com/tvalley71" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/yellow_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 
-### Support
+### ⚠️ Compatibility Notice
 
-You can [open issues directly](https://github.com/Tvalley71/pluggit/issues/new) on this repository. To keep discussions centralized, please refer to the Dantherm Integration [here](https://github.com/Tvalley71/dantherm/discussions).
+This custom integration requires:
+
+- Home Assistant version **2025.1.0** or newer
+
+Only support for Modbus over TCP/IP.
+
+<!-- END:shared-section -->
 
 Known supported units:
 
 - AP310
 
-Please let me know if any other models are supported by clicking [here](https://github.com/Tvalley71/dantherm/discussions/new?category=general). Be sure to include both the model name and the unit type number. The unit type number can be found in the **Device Info** on the Integration page in Home Assistant, listed as "Unknown" followed by a number if the unit is not recognized by the integration.
+<!-- START:shared-section -->
+
+<!-- START:no-dantherm-replace -->
+The listed units are known to work with this integration. Basically, all units compatible with the **_Dantherm Residential_** or **_Pluggit iFlow_** apps should work with the integration as well.
+<!-- END:no-dantherm-replace -->
+
+> [!NOTE]  
+> If you have a model not listed and are using this integration, please let me know by posting [here](https://github.com/Tvalley71/dantherm/discussions/new?category=general). Make sure to include both the model name and the unit type number.  
+> The number can be found in the **Device Info** section on the integration page; if the unit is not recognized, it will be listed as "Unknown" followed by the number.
+
+
+### Controls and sensors
+
+#### Buttons Entities
+
+| Entity            | Description       |
+|-------------------|-------------------|
+| `alarm_reset`     | Reset alarm       |
+| `filter_reset`    | Reset filter      |
+
+#### Calendar Entity
+
+| Entity        | Description              |
+|---------------|--------------------------|
+| ~~`calendar`~~ | ~~Operation Calendar~~  |
+
+#### Cover Entity
+
+| Entity           | Description              |
+|------------------|--------------------------|
+| `bypass_damper`  | Bypass damper [1]        |
+
+#### Number Entities
+
+| Entity                      | Description                        |
+|-----------------------------|------------------------------------|
+| `boost_mode_timeout`        | Boost mode timeout [3]             |
+| `bypass_minimum_temperature`| Bypass minimum temperature [2]     |
+| `bypass_maximum_temperature`| Bypass maximum temperature [2]     |
+| `eco_mode_timeout`          | Eco mode timeout [3]               |
+| `filter_lifetime`           | Filter lifetime [2]                |
+| `home_mode_timeout`         | Home mode timeout [3]              |
+| `manual_bypass_duration`    | Manual bypass duration [1][2]      |
+
+#### Select Entities
+
+| Entity                      | Description                        |
+|-----------------------------|------------------------------------|
+| `boost_operation_selection` | Boost operation selection [3]      |
+| ~~`default_operation_selection`~~ | ~~Default operation selection~~ |
+| `eco_operation_selection`   | Eco operation selection [3]        |
+| `fan_level_selection`       | Fan level selection                |
+| `home_operation_selection`  | Home operation selection [3]       |
+| `operation_selection`       | Mode of operation selection        |
+| `week_program_selection`    | Week program selection [2]         |
+
+#### Sensor Entities
+
+| Entity                        | Description                          |
+|-------------------------------|--------------------------------------|
+| `air_quality`                 | Air quality sensor [1]               |
+| `alarm`                       | Alarm sensor                         |
+| `exhaust_temperature`         | Exhaust temperature sensor           |
+| `extract_temperature`         | Extract temperature sensor           |
+| `fan_level`                   | Fan level                            |
+| `fan1_speed`                  | Fan 1 speed [2]                      |
+| `fan2_speed`                  | Fan 2 speed [2]                      |
+| `filter_remain`               | Filter remain                        |
+| `filter_remain_level`         | Filter remain level [2]              |
+| `humidity`                    | Humidity sensor [1]                  |
+| `adaptive_state`              | Adaptive state [4]                   |
+| `internal_preheater_dutycycle`| Preheater power dutycycle [1][2]     |
+| `operation_mode`              | Operation mode                       |
+| `outdoor_temperature`         | Outdoor temperature sensor           |
+| `room_temperature`            | Room temperature sensor [1][2]       |
+| `supply_temperature`          | Supply temperature sensor            |
+| `work_time`                   | Work time [2]                        |
+
+#### Switch Entities
+
+| Entity                 | Description                     |
+|------------------------|---------------------------------|
+| `away_mode`            | Away mode                       |
+| `boost_mode`           | Boost mode [3]                  |
+| `disable_bypass`       | Disable bypass [2]              |
+| `eco_mode`             | Eco mode [3]                    |
+| `fireplace_mode`       | Fireplace mode                  |
+| `home_mode`            | Home mode [3]                   |
+| `manual_bypass_mode`   | Manual bypass mode [1]          |
+| `night_mode`           | Night mode [2]                  |
+| `sensor_filtering`     | Sensor filtering [2]            |
+| `summer_mode`          | Summer mode                     |
+
+#### Text Entities
+
+| Entity                   | Description                     |
+|--------------------------|---------------------------------|
+| `night_mode_end_time`    | Night mode end time text [2]    |
+| `night_mode_start_time`  | Night mode start time text [2]  |
+
+### Notes
+
+[1] The entity may not install due to lack of support or installation in the particular unit.  
+[2] The entity is disabled by default.  
+[3] The entity will be enabled or disabled depending on whether the corresponding adaptive trigger is configured.  
+[4] The entity can only be enabled if any of the adaptive triggers are configured.
+
+_~~Strikethrough~~ is a work in progress, planned for version 0.5.0._
 
 ### Installation
 
@@ -35,7 +150,7 @@ Please let me know if any other models are supported by clicking [here](https://
     - For most installations, this will be **'/config/'**.
 2. Inside the configuration directory, create a new folder named **'custom_components'** if it does not already exist.
 3. Inside the **'custom_components'** folder, create a new folder named **'pluggit'**.
-4. Download the latest release of the Pluggit integration from the [releases page](https://github.com/Tvalley71/pluggit/releases/latest) into the **'custom_components/pluggit'** directory:
+4. Download the latest release of the Pluggit integration from the [releases page](https://github.com/Tvalley71/dantherm/releases/latest) into the **'custom_components/pluggit'** directory:
 5. Once the files are in place, restart your Home Assistant instance.
 
 ### Configuration
@@ -47,6 +162,501 @@ After installation, add the Pluggit integration to your Home Assistant configura
 3. Search for "Pluggit" and select it from the list of available integrations.
 4. Follow the on-screen instructions to complete the integration setup.
 
+![Skærmbillede 2024-05-04 090018](https://github.com/user-attachments/assets/a5c2faad-2b96-438b-a761-4e24075efbf3)
+![Skærmbillede 2024-05-04 090125](https://github.com/user-attachments/assets/7869346c-04e0-4980-9536-bf2cdd27cbc0)
+
+<!-- END:shared-section -->
+
+### Support
+
+You can [open issues directly](https://github.com/Tvalley71/pluggit/issues/new) on this repository. To keep discussions centralized, please refer to the Dantherm Integration [here](https://github.com/Tvalley71/dantherm/discussions).
+
+<!-- START:shared-section -->
+
+### Languages
+
+Currently supported languages:
+
+Danish, Dutch, English, German and French.
+
+> [!NOTE]
+> Want to help translate? Grab a language file on GitHub [here](./custom_components/pluggit/translations) and post it [here](https://github.com/Tvalley71/dantherm/discussions/new?category=general). You are also welcome to submit a PR.
+
+
+## Screenshots
+
+![Skærmbillede fra 2025-02-09 15-49-04](https://github.com/user-attachments/assets/81ded97a-ff08-41f6-8ac4-8042501e355d)
+
+![Skærmbillede fra 2025-02-09 15-26-39](https://github.com/user-attachments/assets/f12ce875-5f48-47d2-a975-3872f6415c07)
+![Skærmbillede fra 2025-02-09 15-27-48](https://github.com/user-attachments/assets/2ca03de0-a469-4b0e-b362-5f6d486d1f9e)
+
+![Skærmbillede fra 2025-02-09 15-28-23](https://github.com/user-attachments/assets/0efe815a-51fb-4e4b-bee8-d62bea40d4a7)
+![Skærmbillede fra 2025-02-09 15-28-58](https://github.com/user-attachments/assets/6c192224-03cf-4094-b944-942c7395cd5b)
+
+![Skærmbillede fra 2025-02-09 15-31-03](https://github.com/user-attachments/assets/1d17f88b-c3f0-441a-917c-55bee87f287e)
+
+
+> [!NOTE]
+> The HAC module functions are currently unsupported due to limited testing possibilities. If support for these functions are desired, please contact me for potential collaborative efforts to provide the support.
+
+
+## Examples
+
+#### Picture-elements card
+
+This picture-elements card provides a dynamic and intuitive interface for monitoring and controlling your Pluggit ventilation unit. Designed to resemble the Pluggit app, it visually adapts based on the unit’s bypass state while displaying key real-time data:
+
+*	Alarms – Stay alerted to system issues.
+*	Filter Remaining Level – Easily check when filter replacement is needed.
+*	Ventilation Temperatures – View four key temperature readings: Supply, Extract, Outdoor, and Exhaust.
+*	Humidity Level – Monitor indoor humidity for optimal air quality.
+
+Clicking on any displayed entity allows you to adjust its state or explore detailed history graphs for deeper insights.
+
+![Skærmbillede 2024-05-21 182357](https://github.com/Tvalley71/dantherm/assets/83084467/220edf94-71aa-4c29-abd4-c9ed191abd32)
+
+![Skærmbillede 2024-05-21 182443](https://github.com/Tvalley71/dantherm/assets/83084467/91ab4cf7-d7cb-4df9-a602-0d8955203b70)
+
+![Skærmbillede 2024-05-21 182154](https://github.com/Tvalley71/dantherm/assets/83084467/66fc2c18-7db1-403e-ae2b-fc32a4734d6d)
+
+<details>
+
+<summary>The details for the above picture-elements card 👈 Click to open
+    
+_(YAML updated for better image scaling on 2025-5-19, adjusted state image behavior on 2025-6-9)_</summary>
+
+####
+
+To integrate this into your dashboard, begin by downloading and extracting this <!-- END:shared-section -->[zip file](https://github.com/user-attachments/files/20907266/picture-elements-card.zip)<!-- START:shared-section -->. Copy the contained files into the "www" folder within your configuration directory on Home Assistant. You can use the _Samba share_ add-on, the upload feature in the _Studio Code Server_ add-on, or other preferred methods.
+
+Next, insert the following code into your dashboard. If your Home Assistant setup uses a language other than English, make sure to modify the entity names in the code accordingly. You also need to enable the filter_remain_level sensor.
+
+#### The code
+
+```yaml
+
+type: picture-elements
+image: /local/pluggit1.png
+elements:
+  - type: image
+    entity: sensor.pluggit_filter_remain_level
+    state_image:
+      '0': /local/pluggit4.png
+      '1': /local/pluggit5.png
+      '2': /local/pluggit6.png
+      '3': /local/pluggit7.png
+    style:
+      left: 50%
+      top: 50%
+      width: 100%
+    tap_action:
+      action: none
+  - type: conditional
+    conditions:
+      - entity: sensor.pluggit_operation_mode
+        state_not: '6'
+    elements:
+      - type: image
+        entity: cover.pluggit_bypass_damper
+        state_image:
+          closed: /local/pluggit2.png
+          closing: /local/pluggit2.png
+          open: /local/pluggit3.png
+          opening: /local/pluggit3.png
+        style:
+          left: 63.3%
+          top: 75%
+          width: 50.87%
+        tap_action:
+          action: more-info
+      - type: conditional
+        conditions:
+          - entity: cover.pluggit_bypass_damper
+            state:
+              - closed
+              - closing
+        elements:
+          - type: state-label
+            entity: sensor.pluggit_outdoor_temperature
+            style:
+              top: 64.5%
+              left: 78%
+          - type: state-label
+            entity: sensor.pluggit_extract_temperature
+            style:
+              top: 64.5%
+              left: 49%
+          - type: state-label
+            entity: sensor.pluggit_exhaust_temperature
+            style:
+              top: 81%
+              left: 78%
+          - type: state-label
+            entity: sensor.pluggit_supply_temperature
+            style:
+              top: 81%
+              left: 49%
+      - type: conditional
+        conditions:
+          - entity: cover.pluggit_bypass_damper
+            state:
+              - open
+              - opening
+        elements:
+          - type: state-label
+            entity: sensor.pluggit_extract_temperature
+            style:
+              top: 64.5%
+              left: 49%
+          - type: state-label
+            entity: sensor.pluggit_outdoor_temperature
+            style:
+              top: 81%
+              left: 78%
+  - type: conditional
+    conditions:
+      - entity: sensor.pluggit_operation_mode
+        state: '6'
+    elements:
+      - type: image
+        image: /local/pluggit8.png
+        style:
+          left: 63.3%
+          top: 75%
+          width: 50.87%
+        tap_action:
+          action: none
+      - type: state-label
+        entity: sensor.pluggit_extract_temperature
+        style:
+          top: 64.5%
+          left: 49%
+  - type: conditional
+    conditions:
+      - entity: sensor.pluggit_alarm
+        state_not: '0'
+    elements:
+      - type: state-label
+        entity: sensor.pluggit_alarm
+        style:
+          top: 15%
+          left: 50%
+          width: 100%
+          font-weight: bold
+          text-align: center
+          color: white
+          background-color: red
+          opacity: 70%
+  - type: state-label
+    entity: select.pluggit_operation_selection
+    style:
+      top: 45%
+      left: 36%
+      font-weight: bold
+      text-align: center;
+      font-size: 100%
+  - type: state-label
+    entity: sensor.pluggit_humidity
+    style:
+      top: 29%
+      left: 38%
+      font-size: 100%
+  - type: state-label
+    entity: select.pluggit_fan_selection
+    style:
+      top: 29%
+      left: 63%
+      font-weight: bold
+      font-size: 100%
+
+```
+</details>
+
+#### Dashboard Badges
+
+Here are some examples of badges added to the dashboard. The pop-up that appears when clicking on a badge will vary depending on the selected entities, either displaying information or enabling manipulation of the Pluggit unit.
+
+![Skærmbillede badge example](https://github.com/user-attachments/assets/bbaac388-0e40-48cf-a0d1-7b42fb5a4234)
+
+
+#### Apex-chart
+
+![Skærmbillede 2025-06-23 092901](https://github.com/user-attachments/assets/29cabc96-54d5-42db-bedc-ae381c8f5c94)
+
+<details>
+
+<summary>The details for the above Apex-chart card (Can be found on HACS) 👈 Click to open</summary>
+
+```yaml
+
+type: custom:apexcharts-card
+update_interval: 5min
+apex_config:
+  stroke:
+    width: 2
+    curve: smooth
+graph_span: 24h
+series:
+  - entity: sensor.pluggit_extract_temperature
+    name: Extract Temperature
+    extend_to: false
+    show:
+      extremas: true
+      legend_value: false
+    group_by:
+      duration: 5min
+      func: avg
+  - entity: sensor.pluggit_outdoor_temperature
+    name: Outdoor Temperature
+    extend_to: false
+    show:
+      extremas: true
+      legend_value: false
+    group_by:
+      duration: 5min
+      func: avg
+  - entity: sensor.pluggit_exhaust_temperature
+    name: Exhaust Temperature
+    extend_to: false
+    show:
+      legend_value: false
+    group_by:
+      duration: 5min
+      func: avg
+  - entity: sensor.pluggit_supply_temperature
+    name: Supply Temperature
+    extend_to: false
+    show:
+      legend_value: false
+    group_by:
+      duration: 5min
+      func: avg
+
+```
+    
+</details>
+
+
+## Sensor Filtering
+
+To improve the stability and reliability of sensor readings, the integration now supports **sensor filtering** for key environmental data collected from the Pluggit unit. This filtering mechanism is applied to the following sensors:
+
+- **Humidity**
+- **Air Quality**
+- **Exhaust Temperature**
+- **Extract Temperature**
+- **Supply Temperature**
+- **Outdoor Temperature**
+- **Room Temperature**
+
+### Control via Home Assistant Switch
+
+The filtering feature can be enabled or disabled via the **"Sensor Filtering"** switch entity. By default, the filtering is **disabled**, ensuring the system behaves as it did previously. When the switch is enabled, the filtering logic described below will be applied.
+
+### How It Works
+
+Each sensor is equipped with a sliding history buffer, storing the last 5 readings. The filter applies two techniques:
+
+1. **Initialization Smoothing**  
+   For the first few readings (up to 5), the filter calculates a simple average. This helps the sensor start off with a stable baseline, preventing a single bad initial reading from influencing the system.
+
+2. **Spike Filtering**  
+   After initialization, every new reading is compared to a rolling average of the last 5 readings.  
+   If the new reading changes more than a defined threshold (`max_change`) compared to the rolling average, the spike is rejected, and the system uses the current rolling average instead.
+
+### Individual Thresholds per Sensor
+
+Each sensor type has a predefined maximum allowed change per reading:
+
+| Sensor      | Max Change |
+|-------------|------------|
+| Humidity    | 5% RH      |
+| Air Quality | 50 PPM     |
+| Temperatures| 2°C        |
+
+This ensures the filtering logic fits the natural dynamics of each sensor type.
+
+> This feature was inspired by [issue #68](https://github.com/Tvalley71/dantherm/issues/68), reported by a community user.
+
+## Actions
+
+### Using the "Pluggit: Set State" and "Pluggit: Set configuration" Actions
+
+The **Pluggit: Set state** action allows you to control the state of your Pluggit ventilation unit directly from a Home Assistant automation. This action provides a wide range of options to customize the operation of your unit, making it suitable for various scenarios.
+
+#### Steps to Use the "Set State" Action
+
+1. **Create a New Automation:**
+   - Navigate to `Settings` > `Automations & Scenes`.
+   - Click on **Add Automation** and select **Start with an empty automation**.
+
+2. **Configure a Trigger:**
+   - Add a trigger that fits your use case. For example:
+     - A time-based trigger to schedule changes.    
+     - A sensor-based trigger to react to environmental changes.
+        - Air Quality Sensor: Trigger when CO2 levels exceed a threshold, e.g., 1000 ppm.
+        - Humidity Sensor: Trigger when humidity exceeds, e.g., 70%.
+        - Window Sensor: Trigger when a window opens.
+        - Cooker Hood: Trigger when the smart plug detects power usage above a threshold.
+
+3. **Add the "Pluggit: Set State" Action:**
+   - Under the **Actions** section, click **Add Action**.
+   - Search for `Pluggit: Set state` in the action picker and select it.
+
+4. **Configure the Action:**
+   - Use the options provided to control the Pluggit ventilation unit:
+     - **Targets:** Choose the area, device, or entity to apply the action.
+     - **Operation Selection:** Set the desired operating mode (e.g., Standby, Automatic, Manual, or Week Program).
+     - **Fan Selection:** Choose the desired fan level (Level 0–4).
+     - **Modes:** Toggle special modes like:
+       - **Away Mode**: Enable or disable away mode.
+       - **Summer Mode**: Turn summer mode on or off.
+       - **Fireplace Mode**: Activate fireplace mode for a limited period.
+       - **Manual Bypass Mode**: Enable or disable manual bypass.
+
+![Skærmbillede fra 2025-02-09 14-46-28](https://github.com/user-attachments/assets/679f4582-4fcf-4adf-bb71-6042409aadb9)
+
+5. **Save the Automation:**
+   - Once configured, save the automation. The Pluggit unit will now respond to the specified trigger and perform the desired action.
+
+The **Pluggit: Set configuration** action allows you to adjust various configuration settings of your Pluggit device directly from Home Assistant. This action can be used in automations, scripts, or manually through the Developer Tools.
+
+![Skærmbillede fra 2025-02-09 14-49-25](https://github.com/user-attachments/assets/2fad1928-d028-45cb-9bea-147944adf2ab)
+
+## ⏳ The following sections are a work in progress  
+These features are planned for version **0.5.0**. The calendar function is currently still under development.
+
+## Integration enhancements
+
+The integration enhances the control of Pluggit ventilation units by introducing **Boost Mode**, **Eco Mode**, **Home Mode**, and a **Calendar Function** for advanced scheduling and automation. These features ensure efficient operation based on both **schedules** and **various triggers**, providing a comfortable and energy-efficient environment.
+
+
+### Boost Mode 🚀  
+Boost Mode is designed for short bursts of increased ventilation, useful after activities like cooking or showering.
+
+- **Boost Mode Switch**: This must be **enabled** for Boost Mode to activate.  
+- **Trigger-Based Activation**: If Boost Mode is **enabled** and the **Boost Mode Trigger** is active, the unit switches to the **Boost Operation Selection**.  
+- **Timeout Handling**: [See Trigger Timeout](#trigger-timeout) for details on how long Boost Mode remains active after the trigger is deactivated.  
+- **Available Operations**: `Level 4`, `Level 3`, or `Level 2`.
+
+> **Important**  
+> The Pluggit unit has a built-in **automatic setback** from `Level 4` to `Level 3` after a fixed time period. This may cause Boost Mode to behave unexpectedly if `Level 4` is used for longer periods.
+
+
+### Eco Mode 🌱  
+Eco Mode is designed to **reduce fan speed** under specific environmental conditions, optimizing efficiency and supporting the unit’s **defrost mechanism** in cold weather.
+
+- **Eco Mode Switch**: This must be **enabled** for Eco Mode to activate.  
+- **Trigger-Based Activation**: If Eco Mode is **enabled** and the **Eco Mode Trigger** is active, the unit switches to the **Eco Operation Selection**.  
+- **Timeout Handling**: [See Trigger Timeout](#trigger-timeout) for details on how long Eco Mode remains active after the trigger is deactivated.  
+- **Available Operations**: `Standby` and `Level 1`.
+
+> **Important**  
+> The Pluggit unit has a built-in **automatic setback** from `Standby` to `Level 3` after a fixed time period. This may cause Eco Mode to behave unexpectedly if `Standby` is used for longer periods.
+
+
+### Home Mode 🏡  
+Home Mode allows for automatic adjustments based on a **Home Mode Trigger**, ensuring efficient ventilation when you are at home.
+
+- **Home Mode Switch**: This must be **enabled** for Home Mode to activate.  
+- **Trigger-Based Activation**: If Home Mode is **enabled** and the **Home Mode Trigger** is active, the unit switches to the **Home Operation Selection**.  
+- **Timeout Handling**: [See Trigger Timeout](#trigger-timeout) for details on how long Home Mode remains active after the trigger is deactivated.  
+- **Available Operations**: `Automatic`, `Level 3`, `Level 2`, `Level 1`, or `Week Program`.
+
+
+### Trigger Timeout ⏱️
+
+Each mode trigger (Boost, Eco, Home) includes a configurable timeout that defines how long the mode remains active after the trigger is deactivated.
+
+- **Timeout Behavior**: After the trigger turns off, the unit continues operating in the triggered mode for the remaining timeout period.  
+- **Reset on Re-trigger**: If the trigger is activated again *within the timeout window*, the countdown restarts.  
+- **Automatic Revert**: When the timeout expires without further trigger activity, the unit reverts to the operation mode that was active before the trigger event—unless this has been overridden by a calendar schedule.
+
+This mechanism ensures that temporary conditions (e.g., presence, humidity, low temperature) cause a short-term mode change without disrupting long-term schedules.
+
+
+### Adaptive Triggers ⚡
+
+Boost, Eco, and Home Modes rely on **Adaptive Triggers** — binary sensors or helpers that determine **when a mode should activate**.
+
+An **Adaptive Trigger** can be:
+
+- A **motion sensor** (e.g., presence detection for Home Mode)  
+- A **humidity sensor** (e.g., high humidity after a shower for Boost Mode)  
+- A **power sensor** (e.g., detecting stove or shower fan usage)  
+- An **outdoor temperature sensor** (e.g., reducing fan speed in cold weather for Eco Mode)  
+- A **custom helper** combining multiple conditions
+
+Adaptive Triggers are configured manually in the integration options and linked to each mode individually.
+
+> ⚠️ **Note**  
+> Only entities of type `binary_sensor` or `input_boolean` are supported as Adaptive Triggers.  
+> Make sure the entity returns an `on` or `off` state.
+
+
+### Trigger Entity Availability 🛑
+
+Entities related to Boost, Eco, and Home Modes (e.g., mode switch, timeout, operation selection) are **disabled by default** unless a corresponding trigger is configured.
+
+If you manually enable these entities via Home Assistant, they will be **automatically disabled again after a reload** of the integration unless a valid trigger is set in the integration options.
+
+
+### Configuring an Adaptive Trigger
+
+#### Steps to set up an Adaptive Trigger:
+
+1. **Go to Home Assistant → Integrations → Pluggit.**
+
+![Skærmbillede 23-04-2025 kl  07 04 48 AM](https://github.com/user-attachments/assets/185aca8c-7d31-4f1b-925e-4088829e9e13)
+
+2. **Click the Configure button** for the desired Pluggit integration instance.
+
+![Skærmbillede 23-04-2025 kl  07 15 19 AM](https://github.com/user-attachments/assets/550e7bde-6993-46bd-823f-82db0067ad89)
+
+3. **Enter the trigger entity**:
+   - Use the appropriate field (e.g., `Boost Mode Trigger`, `Eco Mode Trigger`, `Home Mode Trigger`)
+   - Examples: `binary_sensor.kitchen_motion`, `binary_sensor.living_room_presence`, `binary_sensor.outdoor_temperature_low`
+4. **Click Submit** to save the configuration.
+5. **Enable the corresponding mode** in the UI.
+
+Once configured, the Pluggit unit will automatically switch to the selected **operation mode** whenever the **Adaptive Trigger** becomes active. ⚡
+
+
+### Calendar Function 📅  
+The Calendar Function allows precise scheduling of different operation modes, providing full automation of the ventilation system.  
+
+- **Integration - Calendar Events**:  
+  By entering an event word into the **summary** of a calendar event, the selected operation will take effect when the event starts, assuming it has a **higher priority** event words than an ongoing event. When the event ends, the system will revert to the **previously active event**. If no underlying event exists, the unit will revert to the **Default Operation Selection**.
+
+- **Event Words**: You can schedule "**Level 1**", "**Level 2**", "**Level 3**", "**Automatic**", "**Away Mode**", "**Night Mode**", "**Boost Mode**", "**Home Mode**", "**Eco Mode**", and "**Week Program**". These terms will be translated according to the selected language in Home Assistant, assuming your language is supported by the integration.
+  
+  - If **Level 1** to **Level 3** is scheduled, the unit will run in Manual mode at the selected fan level.
+  - If **Automatic** is scheduled, the unit will operate in Demand Mode.
+  - If **Away Mode** is scheduled, Away Mode will be **enabled at the start** and **disabled at the end** of the event.
+  - If **Night Mode** is scheduled, Night Mode will be **enabled at the start** and **disabled at the end** of the event.
+  - If **Boost Mode**, **Home Mode**, or **Eco Mode** is scheduled, the respective mode’s trigger will be **enabled at the start** and **disabled at the end**, allowing the unit to switch modes dynamically.
+  - If **Week Program** is scheduled, the unit will follow the selected program in **Week Program Selection**.
+
+- **Priority System**: The following is the **priority order** for calendar scheduling:  
+  1. **Away Mode** (highest priority)  
+  2. **Boost Mode**  
+  3. **Night Mode**  
+  4. **Home Mode**  
+  5. **Eco Mode**  
+  6. **Level 3**  
+  7. **Level 2**  
+  8. **Level 1**  
+  9. **Automatic**  
+  10. **Week Program** (lowest priority)  
+
+The available operations in **Default Operation Selection** are **Automatic**, **Level 3**, **Level 2**, **Level 1**, or **Week Program**.
+
+> [!IMPORTANT]
+> The Pluggit unit has built-in **Night Mode Start Time** and **Night Mode End Time**. Scheduling Night Mode outside of these times may not function as expected.
+
+These features provide **seamless automation and intelligent airflow control**, ensuring the ventilation system adapts dynamically to both **planned schedules** and **real-time environmental conditions**. 🚀🏡🌱📅
+
+<!-- END:shared-section -->
 
 ## Disclaimer
 
