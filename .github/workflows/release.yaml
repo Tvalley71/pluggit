@@ -27,21 +27,21 @@ jobs:
           fi
 
       - name: 📥 Checkout the repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           ref: ${{ env.target_branch }}
 
-      - name: 🔢 Set version number
+      - name: 🔢 Set version number in manifest
         run: |
           echo "Using version: $version"
           jq --arg version "$version" '.version = $version' \
-            "${{ github.workspace }}/custom_components/pluggit/manifest.json" > tmp \
-            && mv -f tmp "${{ github.workspace }}/custom_components/pluggit/manifest.json"
+            "custom_components/pluggit/manifest.json" > tmp \
+            && mv -f tmp "custom_components/pluggit/manifest.json"
 
       - name: ✅ Validate manifest version
         run: |
-          manifestversion=$(jq -r '.version' ${{ github.workspace }}/custom_components/pluggit/manifest.json)
+          manifestversion=$(jq -r '.version' custom_components/pluggit/manifest.json)
           if [ "$manifestversion" != "$version" ]; then
             echo "Manifest version ($manifestversion) does not match expected version ($version)"
             exit 1
@@ -58,12 +58,12 @@ jobs:
         run: |
           rsync -av --exclude 'const.py' --exclude 'manifest.json' \
             dantherm/custom_components/dantherm/ \
-            "${{ github.workspace }}/custom_components/pluggit/"
+            "custom_components/pluggit/"
 
       - name: 🔧 Replace integration name
         run: |
           sed -i 's/integration: dantherm/integration: pluggit/g' custom_components/pluggit/services.yaml || echo "No replacement needed"
-          
+
       - name: 📝 Replace translation branding
         run: |
           for file in custom_components/pluggit/translations/*.json; do
@@ -73,26 +73,29 @@ jobs:
               -e 's/dantherm/pluggit/g' "$file"
           done
 
+      - name: 📝 Sync README shared sections from Dantherm
+        run: python3 sync_readme_md.py
+
+      - name: ✅ Commit and push README if changed
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          if git diff --quiet README.md; then
+            echo "No README.md changes to commit."
+          else
+            git add README.md
+            git commit -m "🔄 Update shared README sections from Dantherm"
+            git push origin ${{ env.target_branch }}
+          fi
+
       - name: 📦 Create zip file
         run: |
-          cd "${{ github.workspace }}/custom_components/pluggit"
+          cd custom_components/pluggit
           zip pluggit.zip -r ./
 
       - name: 📤 Upload release asset (only for real releases)
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v1
         with:
-          files: "${{ github.workspace }}/custom_components/pluggit/pluggit.zip"
+          files: "custom_components/pluggit/pluggit.zip"
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
-      - name: ✅ Commit and push (if changes)
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add custom_components/pluggit/
-          if ! git diff --cached --quiet; then
-            git commit -m "🔄 Update Pluggit integration to version $version"
-            git push origin ${{ env.target_branch }}
-          else
-            echo "No changes to commit or push"
-          fi
