@@ -21,12 +21,13 @@ Only support for Modbus over TCP/IP.
 
 Known supported units:
 
+- AP190
 - AP310
 
 <!-- START:shared-section -->
 
 <!-- START:shared-section no-replace -->
-The listed units are known to work with this integration. Basically, all units compatible with the **_Dantherm Residential_** or **_Pluggit iFlow_** apps should work with the integration as well.
+The listed units are known to work with this integration. Basically, all units compatible with the **_Dantherm Residential_** or **_Pluggit iFlow_** apps should work with the integration.
 <!-- END:shared-section -->
 
 > [!NOTE]  
