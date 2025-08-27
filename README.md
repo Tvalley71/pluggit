@@ -564,8 +564,6 @@ The **Pluggit: Set configuration** action allows you to adjust various configura
 
 ![Skærmbillede fra 2025-02-09 14-49-25](https://github.com/user-attachments/assets/2fad1928-d028-45cb-9bea-147944adf2ab)
 
-## ⏳ The following sections are a work in progress  
-These features are planned for version **0.5.0**. The calendar function is currently still under development.
 
 ## Integration enhancements
 
@@ -652,7 +650,17 @@ To change settings such as disabling temperature unknown values, disabling notif
 ![Skærmbillede 23-04-2025 kl  07 04 48 AM](https://github.com/user-attachments/assets/185aca8c-7d31-4f1b-925e-4088829e9e13)
 3. Click the Configure button (gear icon) for your Pluggit integration instance.
 4. The options dialog will open, where you can adjust the available settings.
-![Skærmbillede 13-07-2025 kl  07 15 56 AM](https://github.com/user-attachments/assets/8e985613-1fb2-414c-b237-0f1d99256c93)
+<img width="588" height="691" alt="Skærmbillede 27-08-2025 kl  14 33 15 PM" src="https://github.com/user-attachments/assets/20ab43d5-1384-4fc7-b72a-5f68307910ac" />
+
+#### Changing Host and Port
+
+If device discovery does not find your unit, you can manually update the IP address and Port in the integration options dialog.
+
+Ip-address should be set to the unit’s current IP address.
+
+Port is typically the Modbus port used by your unit (default: 502).
+
+This allows you to keep the integration connected even if discovery is unavailable or the network configuration changes, without having to remove and re-add the integration.
 
 #### How to Set Up an Adaptive Trigger
 
@@ -672,6 +680,11 @@ When this option is enabled, temperature sensors will always report their curren
 #### Disabling Notifications
 To disable all persistent notifications from the Pluggit integration, enable "Disable notifications".
 When this option is enabled, the integration will not send any persistent notifications to Home Assistant’s notification area.
+
+
+## ⏳ The following sections are a work in progress  
+These features are planned for version **1.0.0**. The calendar function is currently still under development.
+
 
 ### Calendar Function 📅  
 The Calendar Function allows precise scheduling of different operation modes, providing full automation of the ventilation system.  
@@ -704,6 +717,8 @@ The available operations in **Default Operation Selection** are **Automatic**, *
 
 > [!IMPORTANT]
 > The Pluggit unit has built-in **Night Mode Start Time** and **Night Mode End Time**. Scheduling Night Mode outside of these times may not function as expected.
+
+<img width="750" alt="Skærmbillede 2025-08-03 kl  17 25 42" src="https://github.com/user-attachments/assets/02a362f1-19c6-4fd0-94a9-e5be88ef986c" />
 
 These features provide **seamless automation and intelligent airflow control**, ensuring the ventilation system adapts dynamically to both **planned schedules** and **real-time environmental conditions**. 🚀🏡🌱📅
 
