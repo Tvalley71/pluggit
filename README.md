@@ -58,15 +58,19 @@ The listed units are known to work with this integration. Basically, all units c
 
 #### Number Entities
 
-| Entity                      | Description                        |
-|-----------------------------|------------------------------------|
-| `boost_mode_timeout`        | Sets the duration for Boost Mode before it automatically turns off [[3]](#entity-notes) |
-| `bypass_minimum_temperature`| Minimum outdoor temperature allowed for bypass damper to open [[2][5]](#entity-notes) |
-| `bypass_maximum_temperature`| Maximum outdoor temperature allowed for bypass damper to open [[2][5]](#entity-notes) |
-| `eco_mode_timeout`          | Sets the duration for Eco Mode before it automatically deactivates [[3]](#entity-notes) |
-| `filter_lifetime`           | Expected lifetime of the filter before triggering a replacement notification [[2]](#entity-notes) |
-| `home_mode_timeout`         | Sets how long Home Mode should remain active after being triggered [[3]](#entity-notes) |
-| `manual_bypass_duration`    | Duration for which manual bypass remains active after user activation [[1][2][5]](#entity-notes) |
+| Entity                              | Description                        |
+|-------------------------------------|------------------------------------|
+| `boost_mode_timeout`                | Sets the duration for Boost Mode before it automatically turns off [[3]](#entity-notes) |
+| `bypass_minimum_temperature`        | Minimum outdoor temperature (winter[[6]](#entity-notes)) allowed for bypass damper to open [[2][5]](#entity-notes) |
+| `bypass_maximum_temperature`        | Maximum outdoor temperature (winter[[6]](#entity-notes)) allowed for bypass damper to open [[2][5]](#entity-notes) |
+| `bypass_minimum_temperature_summer` | Minimum outdoor temperature (summer) allowed for bypass damper to open [[2][5]](#entity-notes) |
+| `bypass_maximum_temperature_summer` | Maximum outdoor temperature (summer) allowed for bypass damper to open [[2][5]](#entity-notes) |
+| `eco_mode_timeout`                  | Sets the duration for Eco Mode before it automatically deactivates [[3]](#entity-notes) |
+| `filter_lifetime`                   | Expected lifetime of the filter before triggering a replacement notification [[2]](#entity-notes) |
+| `humidity_setpoint`                 | Humidity setpoint in % (winter[[6]](#entity-notes)) [[2][5]](#entity-notes) |
+| `humidity_setpoint_summer`          | Humidity setpoint in % (summer) [[2][5]](#entity-notes) |
+| `home_mode_timeout`                 | Sets how long Home Mode should remain active after being triggered [[3]](#entity-notes) |
+| `manual_bypass_duration`            | Duration for which manual bypass remains active after user activation [[1][2][5]](#entity-notes) |
 
 #### Select Entities
 
@@ -133,6 +137,7 @@ The listed units are known to work with this integration. Basically, all units c
 [3] The entity will be enabled or disabled depending on whether the corresponding adaptive trigger is configured.  
 [4] The entity can only be enabled if any of the adaptive triggers are configured.  
 [5] The entity may not install due to firmware limitation.  
+[6] Winter setting if summer setting is available (Firmware ≥ 3.14).  
 
 _~~Strikethrough~~ is a work in progress, planned for version 0.5.0._
 
@@ -652,7 +657,7 @@ To change settings such as disabling temperature unknown values, disabling notif
 4. The options dialog will open, where you can adjust the available settings.
 <img width="588" height="691" alt="Skærmbillede 27-08-2025 kl  14 33 15 PM" src="https://github.com/user-attachments/assets/20ab43d5-1384-4fc7-b72a-5f68307910ac" />
 
-#### Changing Host and Port
+#### Changing IP address and Port
 
 If device discovery does not find your unit, you can manually update the IP address and Port in the integration options dialog.
 
