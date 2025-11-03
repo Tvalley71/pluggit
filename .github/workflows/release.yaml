@@ -70,7 +70,7 @@ jobs:
           fi
 
       - name: 🌿 Set Dantherm branch
-        run: echo "dantherm_branch=main" >> $GITHUB_ENV
+        run: echo "dantherm_branch=$dantherm_branch" >> $GITHUB_ENV
 
       - name: 📥 Checkout Dantherm repository
         run: |
