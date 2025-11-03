@@ -9,23 +9,45 @@ on:
         description: 'Version number to release or simulate (e.g. 0.4.11)'
         required: true
         default: '0.0.0'
+      dantherm_branch:
+        description: 'Branch to pull from dantherm when manually dispatching'
+        required: false
+        default: 'main'
+      target_branch:
+        description: 'Target branch to push changes to when manually dispatching'
+        required: false
+        default: 'test'
 
 jobs:
   release:
-    name: Release
     runs-on: ubuntu-latest
 
     steps:
       - name: 🧠 Define variables
         run: |
+          # Hvis workflow trigges af et release-event
           if [ "${{ github.event_name }}" = "release" ]; then
             echo "version=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
-            echo "target_branch=main" >> $GITHUB_ENV
-          else
-            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_ENV
-            echo "target_branch=test" >> $GITHUB_ENV
-          fi
 
+            # Hvis release er en prerelease, sæt target_branch til 'test' (eller hvilken branch du ønsker)
+            if [ "${{ github.event.release.prerelease }}" = "true" ]; then
+              echo "target_branch=test" >> $GITHUB_ENV
+              # Her vælger vi at clone dantherm fra feature/calendar for prereleases
+              echo "target_branch=test" >> $GITHUB_ENV
+              echo "dantherm_branch=feature/calendar" >> $GITHUB_ENV
+            else
+              # Almindelig (public) release -> push til main og brug main fra dantherm
+              echo "target_branch=main" >> $GITHUB_ENV
+              echo "dantherm_branch=main" >> $GITHUB_ENV
+            fi
+
+          else
+            # workflow_dispatch (manuel) — brug inputs (kan overskrives ved dispatch)
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+            echo "target_branch=${{ github.event.inputs.target_branch }}" >> $GITHUB_ENV
+            echo "dantherm_branch=${{ github.event.inputs.dantherm_branch }}" >> $GITHUB_ENV
+          fi
+  
       - name: 📥 Checkout the repository
         uses: actions/checkout@v3
         with:
