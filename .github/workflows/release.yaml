@@ -114,7 +114,7 @@ jobs:
           # Strip pre-release/build suffix
           version_short=${version%%-*}
           
-          git commit -m "🔄 Sync shared code and README from Dantherm (v$version_short)"
+          git commit --allow-empty -m "🔄 Sync shared code and README from Dantherm (v$version_short)"
           git fetch origin ${{ env.target_branch }}
           git push origin HEAD:${{ env.target_branch }}
           # fi
