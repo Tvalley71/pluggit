@@ -119,7 +119,7 @@ jobs:
         run: |
           mkdir -p dist
           cd custom_components/pluggit
-          zip -r ../../dist/pluggit.zip . -j          
+          zip -r ../../dist/pluggit.zip .
 
       - name: 📤 Upload release asset (only for real releases)
         if: github.event_name == 'release'
