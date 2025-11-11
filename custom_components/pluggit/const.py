@@ -2,7 +2,7 @@
 
 DOMAIN = "pluggit"
 DEFAULT_NAME = "Pluggit"
-DEFAULT_SCAN_INTERVAL = 10
+DEFAULT_SCAN_INTERVAL = 30  # Updated default for new installations
 DEFAULT_PORT = 502
 
 DEVICE_TYPES = {
