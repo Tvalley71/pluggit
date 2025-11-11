@@ -18,6 +18,9 @@ on:
         required: false
         default: 'main'
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -29,27 +32,24 @@ jobs:
           if [ "${{ github.event_name }}" = "release" ]; then
             echo "version=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
 
-            # Hvis release er en prerelease, sæt target_branch til 'test' (eller hvilken branch du ønsker)
+            # Hvis release er en prerelease, sæt target_branch til test (eller anden ønsket branch)
             if [ "${{ github.event.release.prerelease }}" = "true" ]; then
               echo "target_branch=test" >> $GITHUB_ENV
-              # Her vælger vi at clone dantherm fra feature/calendar for prereleases
-              echo "target_branch=main" >> $GITHUB_ENV
               echo "dantherm_branch=main" >> $GITHUB_ENV
             else
-              # Almindelig (public) release -> push til main og brug main fra dantherm
-              echo "target_branch=main" >> $GITHUB_ENV
+              echo "target_branch=test" >> $GITHUB_ENV
               echo "dantherm_branch=main" >> $GITHUB_ENV
             fi
 
           else
-            # workflow_dispatch (manuel) — brug inputs (kan overskrives ved dispatch)
+            # workflow_dispatch (manuel) — brug inputs
             echo "version=${{ github.event.inputs.version }}" >> $GITHUB_ENV
             echo "target_branch=${{ github.event.inputs.target_branch }}" >> $GITHUB_ENV
             echo "dantherm_branch=${{ github.event.inputs.dantherm_branch }}" >> $GITHUB_ENV
           fi
-  
-      - name: 📥 Checkout the repository
-        uses: actions/checkout@v3
+
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           ref: ${{ env.target_branch }}
@@ -71,50 +71,58 @@ jobs:
 
       - name: 📥 Checkout Dantherm repository
         run: |
-          git clone --branch ${{ env.dantherm_branch }} https://github.com/Tvalley71/dantherm.git dantherm
+          git clone --depth=1 --branch ${{ env.dantherm_branch }} https://github.com/Tvalley71/dantherm.git dantherm
 
-      - name: 📋 Copy shared code files
+      - name: 📋 Copy shared code files (excluding pluggit-owned)
         run: |
           rsync -av --exclude 'const.py' --exclude 'manifest.json' \
             dantherm/custom_components/dantherm/ \
-            "custom_components/pluggit/"
+            custom_components/pluggit/
 
       - name: 🔧 Replace integration name
         run: |
-          sed -i 's/integration: dantherm/integration: pluggit/g' custom_components/pluggit/services.yaml || echo "No replacement needed"
+          sed -i -E 's/integration:\s*dantherm/integration: pluggit/g' custom_components/pluggit/services.yaml || echo "No replacement needed"
 
       - name: 📝 Replace translation branding
         run: |
-          for file in custom_components/pluggit/translations/*.json; do
-            sed -i \
-              -e 's/DANTHERM/PLUGGIT/g' \
-              -e 's/Dantherm/Pluggit/g' \
-              -e 's/dantherm/pluggit/g' "$file"
-          done
+          if ls custom_components/pluggit/translations/*.json 1> /dev/null 2>&1; then
+            for file in custom_components/pluggit/translations/*.json; do
+              sed -i \
+                -e 's/DANTHERM/PLUGGIT/g' \
+                -e 's/Dantherm/Pluggit/g' \
+                -e 's/dantherm/pluggit/g' "$file"
+            done
+          fi
 
-      - name: 📝 Sync README shared sections from Dantherm
+      - name: 🧾 Sync README shared sections from Dantherm
         run: python3 sync_readme_md.py
 
-      - name: ✅ Commit and push README if changed
+      - name: ✅ Commit and push if any files changed
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          if git diff --quiet README.md; then
-            echo "No README.md changes to commit."
+
+          git add custom_components/pluggit || true
+          git add README.md || true
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
           else
-            git add README.md
-            git commit -m "🔄 Update shared README sections from Dantherm"
-            git push origin ${{ env.target_branch }}
+            echo "Committing changes..."
+            git commit -m "🔄 Sync shared code and README from Dantherm (v$version)"
+            git fetch origin ${{ env.target_branch }}
+            git push origin HEAD:${{ env.target_branch }}
           fi
 
       - name: 📦 Create zip file
         run: |
-          cd custom_components/pluggit
-          zip pluggit.zip -r ./
+          mkdir -p dist
+          cd custom_components
+          zip -r ../dist/pluggit.zip pluggit
 
       - name: 📤 Upload release asset (only for real releases)
         if: github.event_name == 'release'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          files: "custom_components/pluggit/pluggit.zip"
+          files: dist/pluggit.zip
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
