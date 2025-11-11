@@ -69,9 +69,6 @@ jobs:
             exit 1
           fi
 
-      - name: 🌿 Set Dantherm branch
-        run: echo "dantherm_branch=main" >> $GITHUB_ENV
-
       - name: 📥 Checkout Dantherm repository
         run: |
           git clone --branch ${{ env.dantherm_branch }} https://github.com/Tvalley71/dantherm.git dantherm
