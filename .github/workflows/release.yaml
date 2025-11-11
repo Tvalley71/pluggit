@@ -34,7 +34,7 @@ jobs:
               echo "target_branch=test" >> $GITHUB_ENV
               # Her vælger vi at clone dantherm fra feature/calendar for prereleases
               echo "target_branch=test" >> $GITHUB_ENV
-              echo "dantherm_branch=feature/calendar" >> $GITHUB_ENV
+              echo "dantherm_branch=main" >> $GITHUB_ENV
             else
               # Almindelig (public) release -> push til main og brug main fra dantherm
               echo "target_branch=main" >> $GITHUB_ENV
