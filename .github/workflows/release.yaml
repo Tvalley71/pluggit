@@ -12,7 +12,7 @@ on:
       dantherm_branch:
         description: 'Branch to pull from dantherm when manually dispatching'
         required: false
-        default: 'test'
+        default: 'main'
       target_branch:
         description: 'Target branch to push changes to when manually dispatching'
         required: false
