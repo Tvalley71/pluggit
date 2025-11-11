@@ -118,8 +118,8 @@ jobs:
       - name: 📦 Create zip file
         run: |
           mkdir -p dist
-          cd custom_components
-          zip -r ../dist/pluggit.zip pluggit/*
+          cd custom_components/pluggit
+          zip -r ../../dist/pluggit.zip . -j          
 
       - name: 📤 Upload release asset (only for real releases)
         if: github.event_name == 'release'
