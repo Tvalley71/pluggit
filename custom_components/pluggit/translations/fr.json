@@ -2,35 +2,68 @@
   "config": {
     "step": {
       "user": {
-        "title": "Connexion Modbus",
+        "title": "Pluggit Configuration",
+        "description": "Configurez les paramètres de connexion de l'appareil.",
         "data": {
-          "host": "Adresse IP de la VMC",
+          "host": "Adresse IP de l'appareil",
           "name": "Préfixe à utiliser pour les entités",
-          "port": "Port TCP de de la VMC",
-          "scan_interval": "Fréquence d'interrogation des registres modbus (secondes)"
+          "port": "Numéro de port TCP"
         }
       }
     },
     "error": {
-      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+      "invalid_host": "Hôte ou adresse IP invalide.",
+      "cannot_connect": "Impossible de se connecter.",
+      "already_configured": "L'appareil est déjà configuré."
     },
     "abort": {
-      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+      "invalid_host": "Hôte ou adresse IP invalide.",
+      "already_configured": "L'appareil est déjà configuré."
     }
   },
   "options": {
     "step": {
-        "init": {
-            "title": "Configuration de l'intégration Pluggit",
-            "data": {
-                "boost_mode_trigger": "Entité de déclenchement du mode Boost",
-                "eco_mode_trigger": "Entité de déclenchement du mode Eco",
-                "home_mode_trigger": "Entité de déclenchement du mode Maison"
-            }
+      "init": {
+        "title": "Configuration Pluggit",
+        "description": "## Bienvenue dans l'intégration Pluggit! 🏡\n\nCette intégration est créée par Tvalley71 pour la communauté Home Assistant. Vous êtes sur le point de configurer les paramètres avancés de votre unité de ventilation Pluggit.\n\n\n☕ Si cette intégration vous aide, j'apprécierais vraiment la reconnaissance sous forme d'une étoile ⭐ sur l'intégration sur GitHub ou peut-être une tasse de café à:\nhttps://www.buymeacoffee.com/tvalley71\nhttps://github.com/Tvalley71/pluggit\n\n\n\nVous serez guidé à travers 3 étapes de configuration.",
+        "data": {
+          "continue": "Continuer"
         }
+      },
+      "network": {
+        "title": "Paramètres Réseau",
+        "description": "Configurez la connexion de l'appareil et la fréquence de mise à jour des données.",
+        "data": {
+          "host": "Adresse IP de l'appareil",
+          "port": "Numéro de port TCP",
+          "polling_speed": "Fréquence de mise à jour des données"
+        }
+      },
+      "triggers": {
+        "title": "Déclencheurs Adaptatifs & Planification",
+        "description": "Configurez les entités qui déclenchent différents modes de ventilation et la planification de calendrier.",
+        "data": {
+          "boost_mode_trigger": "Entité de déclenchement du mode Boost",
+          "eco_mode_trigger": "Entité de déclenchement du mode Eco",
+          "home_mode_trigger": "Entité de déclenchement du mode Maison",
+          "link_calendar_to_primary": "Lier le calendrier à l'appareil principal"
+        }
+      },
+      "advanced": {
+        "title": "Options Avancées",
+        "description": "Configurez le comportement avancé et les options d'affichage.",
+        "data": {
+          "disable_temperature_unknown": "Désactiver la mise à inconnu des capteurs de température en modes bypass/été",
+          "disable_notifications": "Désactiver les notifications"
+        }
+      }
     },
     "error": {
-        "invalid_entity": "ID d'entité invalide. Veuillez entrer un capteur binaire ou un booléen d'entrée valide."
+      "invalid_host": "Hôte ou adresse IP invalide.",
+      "invalid_entity": "ID d'entité invalide. Veuillez entrer un capteur binaire ou un booléen d'entrée valide."
+    },
+    "abort": {
+      "aborted_by_user": "Configuration annulée par l'utilisateur."
     }
   },
   "entity": {
@@ -38,14 +71,21 @@
       "filter_reset": { "name": "Réinitialiser durée de vie filtre" },
       "alarm_reset": { "name": "Réinitialiser alerte active" }
     },
+    "calendar": {
+      "calendar": { "name": "Calendrier" }
+    },
     "cover": {
       "bypass_damper": { "name": "Bypass" }
     },
     "number": {
       "filter_lifetime": { "name": "Durée de vie filtre" },
+      "humidity_setpoint": { "name": "Consigne d'humidité" },
+      "humidity_setpoint_summer": { "name": "Consigne d'humidité (été)" },
       "bypass_minimum_temperature": { "name": "Bypass température minimale" },
       "bypass_maximum_temperature": { "name": "Bypass température maximale" },
       "manual_bypass_duration": { "name": "Durée du bypass manuel" },
+      "bypass_minimum_temperature_summer": { "name": "Bypass température minimale (été)" },
+      "bypass_maximum_temperature_summer": { "name": "Bypass température maximale (été)" },
       "boost_mode_timeout": { "name": "Délai d'expiration du mode Boost" },
       "eco_mode_timeout": { "name": "Délai d'expiration du mode Eco" },
       "home_mode_timeout": { "name": "Délai d'expiration du mode Maison" }
@@ -180,6 +220,7 @@
           "boost": "Mode Boost",
           "eco": "Mode Eco",
           "home": "Mode Maison",
+          "level_0": "Niveau 0",
           "level_1": "Niveau 1",
           "level_2": "Niveau 2",
           "level_3": "Niveau 3",
@@ -195,16 +236,48 @@
       "fan1_speed": { "name": "Vitesse ventilateur 1" },
       "fan2_speed": { "name": "Vitesse ventilateur 2" },
       "humidity": { "name": "Humidité" },
+      "humidity_level": {
+        "name": "Niveau d'humidité",
+        "state": {
+          "0": "Très sec",
+          "1": "Sec",
+          "2": "Normal",
+          "3": "Élevé"
+        }
+      },
       "air_quality": { "name": "Qualité de l'air" },
+      "air_quality_level": {
+        "name": "Niveau de qualité de l'air",
+        "state": {
+          "0": "Excellent",
+          "1": "Acceptable",
+          "2": "Moyen",
+          "3": "Mauvais"
+        }
+      },
       "exhaust_temperature": { "name": "Température expulsion" },
       "extract_temperature": { "name": "Température extraction" },
       "supply_temperature": { "name": "Température pulsion" },
       "outdoor_temperature": { "name": "Température extérieure" },
       "room_temperature": { "name": "Température ambiante" },
-      "filter_remain": { "name": "Remplacement filtre dans" },
-      "filter_remain_level": { "name": "Filtre de remplacement dans le niveau" },
+      "filter_remain": {
+        "name": "Remplacement filtre dans",
+        "state": {
+          "0": "Remplacez le filtre maintenant."
+        }
+      },
+      "filter_remain_level": {
+        "name": "Niveau de durée de vie restante du filtre",
+        "state": {
+          "0": "Excellent",
+          "1": "Bon",
+          "2": "Mauvais",
+          "3": "Remplacer maintenant"
+        }
+      },
       "work_time": { "name": "Temps de fonctionnement" },
-      "internal_preheater_dutycycle": { "name": "Cycle de service du préchauffeur"}
+      "internal_preheater_dutycycle": { "name": "Cycle de service du préchauffeur"},
+      "features": { "name": "Features" }
     },
     "switch": {
       "away_mode": { "name": "Mode absent" },
@@ -224,6 +297,13 @@
     }
   },
   "selector": {
+    "polling_speed": {
+      "options": {
+        "fast": "Rapide (10 secondes)",
+        "normal": "Normal (30 secondes)",
+        "slow": "Lent (60 secondes)"
+      }
+    },
     "operations": {
       "options": {
         "standby": "Arrêt",
@@ -262,6 +342,10 @@
       "name": "Définir l'état",
       "description": "Contrôlez l'état de l'unité de ventilation avec un appel d'action.",
       "fields": {
+        "device_id": {
+          "name": "Appareil",
+          "description": "Sélectionnez l'appareil Pluggit."
+        },
         "operation_selection": {
           "name": "Sélection mode",
           "description": "Sélectionnez le mode d'opération souhaité. Le mode Arrêt sera réinitialisé au niveau manuel 3 après environ 4 heures."
@@ -282,10 +366,6 @@
           "name": "Mode cheminée",
           "description": "Activez ou désactivez le mode cheminée. Le mode cheminée restera activé pendant une période limitée."
         },
-        "disable_bypass": {
-          "name": "Désactiver le bypass",
-          "description": "Désactivez le clapet de bypass."
-        },
         "manual_bypass_mode": {
           "name": "Mode bypass manuel",
           "description": "Activez ou désactivez le mode de contournement manuel. Le contournement manuel sera limité à la durée de contournement manuelle."
@@ -296,21 +376,13 @@
       "name": "Définir la configuration",
       "description": "Ajustez les paramètres de configuration de l'appareil Pluggit.",
       "fields": {
-        "bypass_minimum_temperature": {
-          "name": "Température minimale de dérivation",
-          "description": "Définissez la température minimale pour le fonctionnement de la dérivation."
-        },
-        "bypass_maximum_temperature": {
-          "name": "Température maximale de dérivation",
-          "description": "Définissez la température maximale pour le fonctionnement de la dérivation."
+        "device_id": {
+          "name": "Appareil",
+          "description": "Sélectionnez l'appareil Pluggit."
         },
         "filter_lifetime": {
           "name": "Durée de vie du filtre",
           "description": "Définissez la durée de vie du filtre en jours."
-        },
-        "manual_bypass_duration": {
-          "name": "Durée de la dérivation manuelle",
-          "description": "Définissez la durée du mode de dérivation manuelle en minutes."
         },
         "night_mode": {
           "name": "Mode nuit",
@@ -330,13 +402,87 @@
         }
       }
     },
+    "set_configuration_2": {
+      "name": "Définir la configuration 2",
+      "description": "Ajustez les paramètres de configuration de l'appareil Pluggit. Remarque : Les champs suivants ne sont pris en charge que sur les appareils avec une version du firmware 2.70 ou supérieure.",
+      "fields": {
+        "device_id": {
+          "name": "Appareil",
+          "description": "Sélectionnez l'appareil Pluggit."
+        },
+        "bypass_minimum_temperature": {
+          "name": "Bypass température minimale",
+          "description": "Définissez la température minimale pour le fonctionnement de la bypass."
+        },
+        "bypass_maximum_temperature": {
+          "name": "Bypass température maximale",
+          "description": "Définissez la température maximale pour le fonctionnement de la bypass."
+        },
+        "humidity_setpoint": {
+          "name": "Consigne d'humidité",
+          "description": "Définissez la consigne d'humidité."
+        },
+        "manual_bypass_duration": {
+          "name": "Durée du bypass manuel",
+          "description": "Définissez la durée du mode de bypass manuelle en minutes."
+        },
+        "disable_bypass": {
+          "name": "Désactiver le bypass",
+          "description": "Désactivez le clapet de bypass."
+        }
+      }
+    },
+    "set_configuration_3": {
+      "name": "Définir la configuration 3",
+      "description": "Ajustez les paramètres de configuration de l'appareil Pluggit. Remarque : Les champs suivants ne sont pris en charge que sur les appareils avec une version du firmware 3.08 ou supérieure.",
+      "fields": {
+        "device_id": {
+          "name": "Appareil",
+          "description": "Sélectionnez l'appareil Pluggit."
+        },
+        "bypass_minimum_temperature_summer": {
+          "name": "Bypass température minimale (été)",
+          "description": "Définissez la température minimale pour le fonctionnement de la bypass."
+        },
+        "bypass_maximum_temperature_summer": {
+          "name": "Bypass température maximale (été)",
+          "description": "Définissez la température maximale pour le fonctionnement de la bypass."
+        },
+        "humidity_setpoint_summer": {
+          "name": "Consigne d'humidité (été)",
+          "description": "Définissez la consigne d'humidité."
+        }
+      }
+    },
     "filter_reset": {
       "name": "Réinitialisation du filtre",
-      "description": "Réinitialisez les jours restants du filtre à sa durée de vie."
+      "description": "Réinitialisez les jours restants du filtre à sa durée de vie.",
+      "fields": {
+        "device_id": {
+          "name": "Appareil",
+          "description": "Sélectionnez l'appareil Pluggit."
+        }
+      }
     },
     "alarm_reset": {
       "name": "Réinitialisation de l'alarme",
-      "description": "Réinitialisez la première alarme en attente."
+      "description": "Réinitialisez la première alarme en attente.",
+      "fields": {
+        "device_id": {
+          "name": "Appareil",
+          "description": "Sélectionnez l'appareil Pluggit."
+        }
+      }
+    },
+    "clear_adaptive_event_stack": {
+      "name": "Effacer la pile d'événements adaptatifs",
+      "description": "Effacez tous les événements de la pile d'événements adaptatifs. Cela supprimera tous les événements adaptatifs actifs et réinitialisera l'état adaptatif à \"aucun\".",
+      "fields": {
+        "device_id": {
+          "name": "Appareil",
+          "description": "Sélectionnez l'appareil Pluggit."
+        }
+      }
     }
   },
   "exceptions": {
@@ -346,8 +492,23 @@
     "invalid_filter_lifetime": {
       "message": "Durée de vie du filtre invalide. Utilisez des valeurs entre 0 et 360 jours."
     },
+    "unsupported_by_firmware": {
+      "message": "Les fonctionnalités dans cette action ne sont pas prises en charge par la version du firmware de l'appareil."
+    },
     "pymodbus_version": {
-      "message": "L'intégration Pluggit nécessite pymodbus version %s ou supérieure, mais la version %s est installée"
+      "message": "L'intégration Pluggit nécessite pymodbus version %s ou supérieure, mais la version %s est installée."
+    },
+    "disable_notifications": {
+      "message": "Les notifications peuvent être désactivées dans les options de l'intégration."
+    },
+    "filter_remain_notification": {
+      "message": "Le filtre a atteint la fin de sa durée de vie. Veuillez remplacer le filtre."
+    },
+    "invalid_adaptive_state": {
+      "message": "État adaptatif invalide : {state}. États disponibles : {available_states}"
+    },
+    "rediscovery_notification": {
+      "message": "Un appareil {domain} avec le numéro de série {serial_number} a été redécouvert à l'adresse IP {ip_address}."
     }
   }
 }

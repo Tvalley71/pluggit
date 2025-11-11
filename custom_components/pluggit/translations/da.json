@@ -2,35 +2,68 @@
   "config": {
     "step": {
       "user": {
-        "title": "Modbus forbindelse",
+        "title": "Pluggit Configuration",
+        "description": "Konfigurer enhedens forbindelsesindstillinger.",
         "data": {
-          "host": "Indtast ip-adresse til din enhed",
+          "host": "Enhedens IP-adresse",
           "name": "Indtast prefix til din enheds entiteter",
-          "port": "Indtast TCP port der skal forbindes til på din enhed",
-          "scan_interval": "Indtast opdateringsfrekvens for modbus registere i sekunder"
+          "port": "TCP-portnummer"
         }
       }
     },
     "error": {
-      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+      "invalid_host": "Ugyldig host eller IP-adresse.",
+      "cannot_connect": "Kan ikke oprette forbindelse.",
+      "already_configured": "Enhed er allerede konfigureret."
     },
     "abort": {
-      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+      "invalid_host": "Ugyldig host eller IP-adresse.",
+      "already_configured": "Enhed er allerede konfigureret."
     }
   },
   "options": {
     "step": {
-        "init": {
-        "title": "Indstillinger for Pluggit-integration",
-            "data": {
-                "boost_mode_trigger": "Boost-tilstand udløser entitet",
-                "eco_mode_trigger": "Eco-tilstand udløser entitet",
-                "home_mode_trigger": "Hjemmetilstand udløser entitet"
-            }
+      "init": {
+        "title": "Pluggit Konfiguration",
+        "description": "## Velkommen til Pluggit Integrationen! 🏡\n\nDenne integration er skabt af Tvalley71 til Home Assistant fællesskabet. Du er ved at konfigurere avancerede indstillinger for din Pluggit ventilationsenhed.\n\n\n☕ Hvis denne integration hjælper dig, ville jeg virkelig sætte pris på anerkendelsen i form af en stjerne ⭐ på integrationen på GitHub eller måske en kop kaffe på:\nhttps://www.buymeacoffee.com/tvalley71\nhttps://github.com/Tvalley71/pluggit\n\n\n\nDu vil blive guidet gennem 3 konfigurationstrin.",
+        "data": {
+          "continue": "Fortsæt"
         }
+      },
+      "network": {
+        "title": "Netværksindstillinger",
+        "description": "Konfigurer enhedsforbindelse og dataopdateringsfrekvens.",
+        "data": {
+          "host": "Enhedens IP-adresse",
+          "port": "TCP-portnummer",
+          "polling_speed": "Dataopdateringsfrekvens"
+        }
+      },
+      "triggers": {
+        "title": "Adaptive Udløsere & Planlægning",
+        "description": "Konfigurer entiteter der udløser forskellige ventilationstilstande og kalenderplanlægning.",
+        "data": {
+          "boost_mode_trigger": "Boost-tilstand udløser entitet",
+          "eco_mode_trigger": "Eco-tilstand udløser entitet",
+          "home_mode_trigger": "Hjemmetilstand udløser entitet",
+          "link_calendar_to_primary": "Link kalender til primær enhed"
+        }
+      },
+      "advanced": {
+        "title": "Avancerede Muligheder",
+        "description": "Konfigurer avanceret adfærd og visningsindstillinger.",
+        "data": {
+          "disable_temperature_unknown": "Deaktiver temperaturføler til ukendt i bypass/sommer tilstande",
+          "disable_notifications": "Deaktiver notifikationer"
+        }
+      }
     },
     "error": {
-        "invalid_entity": "Ugyldigt enheds-ID. Indtast venligst en gyldig binær sensor eller input boolean."
+      "invalid_host": "Ugyldig host eller IP-adresse.",
+      "invalid_entity": "Ugyldigt enheds-ID. Indtast venligst en gyldig binær sensor eller input boolean."
+    },
+    "abort": {
+      "aborted_by_user": "Konfiguration afbrudt af bruger."
     }
   },
   "entity": {
@@ -38,14 +71,21 @@
       "filter_reset": { "name": "Nulstil filter" },
       "alarm_reset": { "name": "Nulstil alarm" }
     },
+    "calendar": {
+      "calendar": { "name": "Kalender" }
+    },
     "cover": {
       "bypass_damper": { "name": "Bypass-spjæld"}
     },
     "number": {
       "filter_lifetime": { "name": "Filterlevetid" },
+      "humidity_setpoint": { "name": "Luftfugtighedssætpunkt" },
+      "humidity_setpoint_summer": { "name": "Luftfugtighedssætpunkt (sommer)" },
       "bypass_minimum_temperature": { "name": "Bypass minimum temperatur" },
       "bypass_maximum_temperature": { "name": "Bypass maximum temperatur" },
       "manual_bypass_duration": { "name": "Varighed af manuel bypass" },
+      "bypass_minimum_temperature_summer": { "name": "Bypass minimum temperatur (sommer)" },
+      "bypass_maximum_temperature_summer": { "name": "Bypass maximum temperatur (sommer)" },
       "boost_mode_timeout": { "name": "Boost-tilstand timeout" },
       "eco_mode_timeout": { "name": "Eco-tilstand timeout" },
       "home_mode_timeout": { "name": "Hjemmetilstand timeout" }
@@ -181,6 +221,7 @@
           "boost": "Boost-tilstand",
           "eco": "Eco-tilstand",
           "home": "Hjemmetilstand",
+          "level_0": "Niveau 0",
           "level_1": "Niveau 1",
           "level_2": "Niveau 2",
           "level_3": "Niveau 3",
@@ -196,16 +237,48 @@
       "fan1_speed": { "name": "Ventilatorhastighed 1" },
       "fan2_speed": { "name": "Ventilatorhastighed 2" },
       "humidity": { "name": "Luftfugtighed" },
+      "humidity_level": {
+        "name": "Luftfugtighedsniveau",
+        "state": {
+          "0": "Meget tør",
+          "1": "Tør",
+          "2": "Normal",
+          "3": "Høj"
+        }
+      },
       "air_quality": { "name": "Luftkvalitet" },
+      "air_quality_level": {
+        "name": "Luftkvalitetsniveau",
+        "state": {
+          "0": "Fremragende",
+          "1": "Acceptabel",
+          "2": "Middel",
+          "3": "Dårlig"
+        }
+      },
       "exhaust_temperature": { "name": "Udblæsningstemperatur" },
       "extract_temperature": { "name": "Udsugningstemperatur" },
       "supply_temperature": { "name": "Indblæsningstemperatur" },
       "outdoor_temperature": { "name": "Udeluftstemperatur" },
       "room_temperature": { "name": "Rumtemperatur" },
-      "filter_remain": { "name": "Filterstatus" },
-      "filter_remain_level": { "name": "Filterstatus niveau" },
+      "filter_remain": {
+        "name": "Filterrestlevetid",
+        "state": {
+          "0": "Udskift filteret nu."
+        }
+      },
+      "filter_remain_level": {
+        "name": "Filterrestlevetidsniveau",
+        "state": {
+          "0": "Fremragende",
+          "1": "God",
+          "2": "Dårlig",
+          "3": "Skift nu"
+        }
+      },
       "work_time": { "name": "Drifttid" },
-      "internal_preheater_dutycycle": { "name": "Forvarmer driftscyklus"}
+      "internal_preheater_dutycycle": { "name": "Forvarmer driftscyklus"},
+      "features": { "name": "Features" }
     },
     "switch": {
       "away_mode": { "name": "Rejsetilstand" },
@@ -225,6 +298,13 @@
     }
   },
   "selector": {
+    "polling_speed": {
+      "options": {
+        "fast": "Hurtig (10 sekunder)",
+        "normal": "Normal (30 sekunder)",
+        "slow": "Langsom (60 sekunder)"
+      }
+    },
     "operations": {
       "options": {
         "standby": "Standby",
@@ -263,6 +343,10 @@
       "name": "Sæt tilstand",
       "description": "Kontroller tilstande på ventilationsenheden med en handling.",
       "fields": {
+        "device_id": {
+          "name": "Enhed",
+          "description": "Vælg Pluggit-enheden."
+        },
         "operation_selection": {
           "name": "Driftindstilling",
           "description": "Vælg den ønskede drifttilstand. Bemærk: standby vil blive ændret tilbage til manuel niveau 3 efter cirka 4 timer."
@@ -283,10 +367,6 @@
           "name": "Brændeovnstilstand",
           "description": "Slå brændeovnstilstand til eller fra. Bemærk: brændeovnstilstand vil være til i en begrænset tidsperiode."
         },
-        "disable_bypass": {
-          "name": "Deaktiver bypass-spjældet",
-          "description": "Deaktiver bypass-spjældet."
-        },
         "manual_bypass_mode": {
           "name": "Manuel bypasstilstand",
           "description": "Slå manuel bypasstilstand til eller fra. Bemærk: manuel bypasstilstand vil være begrænset af den angivne varighed."
@@ -297,21 +377,13 @@
       "name": "Sæt konfiguration",
       "description": "Juster konfigurationsindstillingerne for Pluggit-enheden.",
       "fields": {
-        "bypass_minimum_temperature": {
-          "name": "Bypass minimumstemperatur",
-          "description": "Indstil den minimale temperatur for bypasstilstand."
-        },
-        "bypass_maximum_temperature": {
-          "name": "Bypass maksimumtemperatur",
-          "description": "Indstil den maksimale temperatur for bypasstilstand."
+        "device_id": {
+          "name": "Enhed",
+          "description": "Vælg Pluggit-enheden."
         },
         "filter_lifetime": {
           "name": "Filterlevetid",
           "description": "Indstil filterets levetid i dage."
-        },
-        "manual_bypass_duration": {
-          "name": "Varighed af manuel bypass",
-          "description": "Indstil varigheden for manuel bypasstilstand i minutter."
         },
         "night_mode": {
           "name": "Nattilstand",
@@ -331,13 +403,87 @@
         }
       }
     },
+    "set_configuration_2": {
+      "name": "Sæt konfiguration 2",
+      "description": "Juster konfigurationsindstillingerne for Pluggit-enheden. Bemærk: Følgende felter understøttes kun på enheder med firmwareversion 2.70 eller nyere.",
+      "fields": {
+        "device_id": {
+          "name": "Enhed",
+          "description": "Vælg Pluggit-enheden."
+        },
+        "bypass_minimum_temperature": {
+          "name": "Bypass minimum temperatur",
+          "description": "Indstil den minimale temperatur for bypasstilstand."
+        },
+        "bypass_maximum_temperature": {
+          "name": "Bypass maksimum temperatur",
+          "description": "Indstil den maksimale temperatur for bypasstilstand."
+        },
+        "humidity_setpoint": {
+          "name": "Luftfugtighedssætpunkt",
+          "description": "Indstil luftfugtighedssætpunktet."
+        },
+        "manual_bypass_duration": {
+          "name": "Varighed af manuel bypass",
+          "description": "Indstil varigheden for manuel bypasstilstand i minutter."
+        },
+        "disable_bypass": {
+          "name": "Deaktiver bypass-spjældet",
+          "description": "Deaktiver bypass-spjældet."
+        }
+      }
+    },
+    "set_configuration_3": {
+      "name": "Sæt konfiguration 3",
+      "description": "Juster konfigurationsindstillingerne for Pluggit-enheden. Bemærk: Følgende felter understøttes kun på enheder med firmwareversion 3.08 eller nyere.",
+      "fields": {
+        "device_id": {
+          "name": "Enhed",
+          "description": "Vælg Pluggit-enheden."
+        },
+        "bypass_minimum_temperature_summer": {
+          "name": "Bypass minimum temperatur (sommer)",
+          "description": "Indstil den minimale temperatur for bypasstilstand."
+        },
+        "bypass_maximum_temperature_summer": {
+          "name": "Bypass maksimum temperatur (sommer)",
+          "description": "Indstil den maksimale temperatur for bypasstilstand."
+        },
+        "humidity_setpoint_summer": {
+          "name": "Luftfugtighedssætpunkt (sommer)",
+          "description": "Indstil luftfugtighedssætpunktet."
+        }
+      }
+    },
     "filter_reset": {
       "name": "Nulstil filter",
-      "description": "Nulstil filterets resterende dage til dets filterlevetid."
+      "description": "Nulstil filterets resterende dage til dets filterlevetid.",
+      "fields": {
+        "device_id": {
+          "name": "Enhed",
+          "description": "Vælg Pluggit-enheden."
+        }
+      }
     },
     "alarm_reset": {
       "name": "Nulstil alarm",
-      "description": "Nulstil første ventende alarm."
+      "description": "Nulstil første ventende alarm.",
+      "fields": {
+        "device_id": {
+          "name": "Enhed",
+          "description": "Vælg Pluggit-enheden."
+        }
+      }
+    },
+    "clear_adaptive_event_stack": {
+      "name": "Ryd adaptiv begivenhedsstak",
+      "description": "Ryd alle begivenheder fra den adaptive begivenhedsstak. Dette fjerner alle aktive adaptive begivenheder og nulstiller den adaptive tilstand til \"ingen\".",
+      "fields": {
+        "device_id": {
+          "name": "Enhed",
+          "description": "Vælg Pluggit-enheden."
+        }
+      }
     }
   },
   "exceptions": {
@@ -347,8 +493,23 @@
     "invalid_filter_lifetime": {
       "message": "Ugyldig filterlevetid. Brug værdier mellem 0 og 360 dage."
     },
+    "unsupported_by_firmware": {
+      "message": "De funktioner i denne handling understøttes ikke af enhedens firmwareversion."
+    },
     "pymodbus_version": {
-      "message": "Pluggit-integrationen kræver pymodbus version %s eller højere, men %s er installeret"
+      "message": "Pluggit-integrationen kræver pymodbus version %s eller højere, men %s er installeret."
+    },
+    "disable_notifications": {
+      "message": "Notifikationer kan deaktiveres i integrationsindstillingerne."
+    },
+    "filter_remain_notification": {
+      "message": "Filteret har nået slutningen af dets levetid. Udskift venligst filteret."
+    },
+    "invalid_adaptive_state": {
+      "message": "Ugyldig adaptiv tilstand: {state}. Tilgængelige tilstande: {available_states}"
+    },
+    "rediscovery_notification": {
+      "message": "En {domain}-enhed med serienummer {serial_number} blev genopdaget på ip-adresse {ip_address}."
     }
   }
 }

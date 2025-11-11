@@ -1,36 +1,69 @@
 {
   "config": {
     "step": {
-        "user": {
-            "title": "Modbus connection",
-            "data": {
-                "host": "Enter ip-address of your unit",
-                "name": "Enter prefix for the device entities",
-                "port": "Enter TCP port on which to connect to the device",
-                "scan_interval": "Enter polling frequency of the modbus registers in seconds"
-            }
+      "user": {
+        "title": "Pluggit Configuration",
+        "description": "Configure device connection settings.",
+        "data": {
+          "host": "Device IP address",
+          "name": "Enter prefix for the device entities",
+          "port": "TCP port number"
         }
+      }
     },
     "error": {
-        "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+      "invalid_host": "Invalid host or IP address.",
+      "cannot_connect": "Cannot connect to the device.",
+      "already_configured": "Device is already configured."
     },
     "abort": {
-        "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+      "invalid_host": "Invalid host or IP address.",
+      "already_configured": "Device is already configured."
     }
   },
   "options": {
     "step": {
-        "init": {
-            "title": "Pluggit Integration Options",
-            "data": {
-                "boost_mode_trigger": "Boost Mode Trigger Entity",
-                "eco_mode_trigger": "Eco Mode Trigger Entity",
-                "home_mode_trigger": "Home Mode Trigger Entity"
-            }
+      "init": {
+        "title": "Pluggit Configuration",
+        "description": "## Welcome to the Pluggit Integration! 🏡\n\nThis integration is created by Tvalley71 for the Home Assistant community. You are about to configure advanced settings for your Pluggit ventilation unit.\n\n\n☕ If this integration helps you, I would really appreciate the recognition in the form of a star ⭐ on the integration on GitHub or maybe a cup of coffee at:\nhttps://www.buymeacoffee.com/tvalley71\nhttps://github.com/Tvalley71/pluggit\n\n\n\nYou will be guided through 3 configuration steps.",
+        "data": {
+          "continue": "Continue"
         }
+      },
+      "network": {
+        "title": "Network Settings",
+        "description": "Configure device connection and data update frequency.",
+        "data": {
+          "host": "Device IP address",
+          "port": "TCP port number",
+          "polling_speed": "Data update frequency"
+        }
+      },
+      "triggers": {
+        "title": "Adaptive Triggers & Scheduling",
+        "description": "Configure entities that trigger different ventilation modes and calendar scheduling.",
+        "data": {
+          "boost_mode_trigger": "Boost mode trigger entity",
+          "eco_mode_trigger": "Eco mode trigger entity",
+          "home_mode_trigger": "Home mode trigger entity",
+          "link_calendar_to_primary": "Link calendar to primary device"
+        }
+      },
+      "advanced": {
+        "title": "Advanced Options",
+        "description": "Configure advanced behavior and display options.",
+        "data": {
+          "disable_temperature_unknown": "Disable setting temperature sensors to unknown in bypass/summer modes",
+          "disable_notifications": "Disable notifications"
+        }
+      }
     },
     "error": {
+        "invalid_host": "Invalid host or IP address.",
         "invalid_entity": "Invalid entity ID. Please enter a valid binary sensor or input boolean."
+    },
+    "abort": {
+      "aborted_by_user": "Configuration aborted by user."
     }
   },
   "entity": {
@@ -38,14 +71,21 @@
       "filter_reset": { "name": "Reset Filter" },
       "alarm_reset": { "name": "Reset Alarm" }
     },
+    "calendar": {
+      "calendar": { "name": "Calendar" }
+    },
     "cover": {
       "bypass_damper": { "name": "Bypass Damper" }
     },
     "number": {
       "filter_lifetime": { "name": "Filter Lifetime" },
+      "humidity_setpoint": { "name": "Humidity Setpoint" },
+      "humidity_setpoint_summer": { "name": "Humidity Setpoint (Summer)" },
       "bypass_minimum_temperature": { "name": "Bypass Minimum Temperature" },
       "bypass_maximum_temperature": { "name": "Bypass Maximum Temperature" },
       "manual_bypass_duration": { "name": "Manual Bypass Duration" },
+      "bypass_minimum_temperature_summer": { "name": "Bypass Minimum Temperature (Summer)" },
+      "bypass_maximum_temperature_summer": { "name": "Bypass Maximum Temperature (Summer)" },
       "boost_mode_timeout": { "name": "Boost Mode Timeout" },
       "eco_mode_timeout": { "name": "Eco Mode Timeout" },
       "home_mode_timeout": { "name": "Home Mode Timeout" }
@@ -134,7 +174,7 @@
           "0": "Standby",
           "1": "Manual",
           "2": "Automatic",
-          "3": "Week program",
+          "3": "Week Program",
           "4": "Servoflow",
           "5": "Away Mode",
           "6": "Summer Mode",
@@ -181,6 +221,7 @@
           "boost": "Boost Mode",
           "eco": "Eco Mode",
           "home": "Home Mode",
+          "level_0": "Level 0",
           "level_1": "Level 1",
           "level_2": "Level 2",
           "level_3": "Level 3",
@@ -189,23 +230,55 @@
           "night": "Night Mode",
           "standby": "Standby",
           "summer": "Summer Mode",
-          "week_program": "Week program"
+          "week_program": "Week Program"
         }
       },
       "fan_level": { "name": "Fan Level" },
       "fan1_speed": { "name": "Fan Speed 1" },
       "fan2_speed": { "name": "Fan Speed 2" },
       "humidity": { "name": "Humidity" },
+      "humidity_level": {
+        "name": "Humidity Level",
+        "state": {
+          "0": "Very Dry",
+          "1": "Dry",
+          "2": "Normal",
+          "3": "High"
+        }
+      },
       "air_quality": { "name": "Air Quality" },
+      "air_quality_level": {
+        "name": "Air Quality Level",
+        "state": {
+          "0": "Excellent",
+          "1": "Acceptable",
+          "2": "Medium",
+          "3": "Poor"
+        }
+      },
       "exhaust_temperature": { "name": "Exhaust Temperature" },
       "extract_temperature": { "name": "Extract Temperature" },
       "supply_temperature": { "name": "Supply Temperature" },
       "outdoor_temperature": { "name": "Outdoor Temperature" },
       "room_temperature": { "name": "Room Temperature" },
-      "filter_remain": { "name": "Filter Remain" },
-      "filter_remain_level": { "name": "Filter Remain Level" },
+      "filter_remain": {
+        "name": "Filter Remain",
+        "state": {
+          "0": "Replace the filter now."
+        }
+      },
+      "filter_remain_level": {
+        "name": "Filter Remain Level",
+        "state": {
+          "0": "Excellent",
+          "1": "Good",
+          "2": "Poor",
+          "3": "Replace Now"
+        }
+      },
       "work_time": { "name": "Work Time" },
-      "internal_preheater_dutycycle": { "name": "Preheater Dutycycle"}
+      "internal_preheater_dutycycle": { "name": "Preheater Dutycycle"},
+      "features": { "name": "Features" }
     },
     "switch": {
       "away_mode": { "name": "Away Mode" },
@@ -225,6 +298,13 @@
     }
   },
   "selector": {
+    "polling_speed": {
+      "options": {
+        "fast": "Fast (10 seconds)",
+        "normal": "Normal (30 seconds)",
+        "slow": "Slow (60 seconds)"
+      }
+    },
     "operations": {
       "options": {
         "standby": "Standby",
@@ -263,6 +343,10 @@
       "name": "Set state",
       "description": "Control the state of the ventilation unit with an action call.",
       "fields": {
+        "device_id": {
+          "name": "Device",
+          "description": "Select the Pluggit device."
+        },
         "operation_selection": {
           "name": "Operation Selection",
           "description": "Select the desired operation mode. Note: standby will be set back to manual level 3 after about 4 hours."
@@ -283,10 +367,6 @@
           "name": "Fireplace Mode",
           "description": "Turn fireplace mode on or off. Note: The fireplace mode will be on for a limited time period."
         },
-        "disable_bypass": {
-          "name": "Disable Bypass Damper",
-          "description": "Disable the bypass damper."
-        },
         "manual_bypass_mode": {
           "name": "Manual Bypass Mode",
           "description": "Turn manual bypass mode on or off. Note: Manual bypass mode will be limited by the specified manual bypass duration."
@@ -297,21 +377,13 @@
       "name": "Set configuration",
       "description": "Adjust the configuration settings for the Pluggit device.",
       "fields": {
-        "bypass_minimum_temperature": {
-          "name": "Bypass Minimum Temperature",
-          "description": "Set the minimum temperature for bypass operation."
-        },
-        "bypass_maximum_temperature": {
-          "name": "Bypass Maximum Temperature",
-          "description": "Set the maximum temperature for bypass operation."
+        "device_id": {
+          "name": "Device",
+          "description": "Select the Pluggit device."
         },
         "filter_lifetime": {
           "name": "Filter Lifetime",
           "description": "Set the lifetime of the filter in days."
-        },
-        "manual_bypass_duration": {
-          "name": "Manual Bypass Duration",
-          "description": "Set the duration for manual bypass mode in minutes."
         },
         "night_mode": {
           "name": "Night Mode",
@@ -331,13 +403,87 @@
         }
       }
     },
+    "set_configuration_2": {
+      "name": "Set configuration 2",
+      "description": "Adjust the configuration settings for the Pluggit device. Note: The following fields are only supported on device's with firmware version 2.70 or above.",
+      "fields": {
+        "device_id": {
+          "name": "Device",
+          "description": "Select the Pluggit device."
+        },
+        "bypass_minimum_temperature": {
+          "name": "Bypass Minimum Temperature",
+          "description": "Set the minimum temperature for bypass operation."
+        },
+        "bypass_maximum_temperature": {
+          "name": "Bypass Maximum Temperature",
+          "description": "Set the maximum temperature for bypass operation."
+        },
+        "humidity_setpoint": {
+          "name": "Humidity Setpoint",
+          "description": "Set the humidity setpoint."
+        },
+        "manual_bypass_duration": {
+          "name": "Manual Bypass Duration",
+          "description": "Set the duration for manual bypass mode in minutes."
+        },
+        "disable_bypass": {
+          "name": "Disable Bypass Damper",
+          "description": "Disable the bypass damper."
+        }
+      }
+    },
+    "set_configuration_3": {
+      "name": "Set configuration 3",
+      "description": "Adjust the configuration settings for the Pluggit device. Note: The following fields are only supported on device's with firmware version 3.08 or above.",
+      "fields": {
+        "device_id": {
+          "name": "Device",
+          "description": "Select the Pluggit device."
+        },
+        "bypass_minimum_temperature_summer": {
+          "name": "Bypass Minimum Temperature (Summer)",
+          "description": "Set the minimum temperature for bypass operation."
+        },
+        "bypass_maximum_temperature_summer": {
+          "name": "Bypass Maximum Temperature (Summer)",
+          "description": "Set the maximum temperature for bypass operation."
+        },
+        "humidity_setpoint_summer": {
+          "name": "Humidity Setpoint (Summer)",
+          "description": "Set the humidity setpoint."
+        }
+      }
+    },
     "filter_reset": {
       "name": "Filter reset",
-      "description": "Reset the filter remaining days to its filter lifetime."
+      "description": "Reset the filter remaining days to its filter lifetime.",
+      "fields": {
+        "device_id": {
+          "name": "Device",
+          "description": "Select the Pluggit device."
+        }
+      }
     },
     "alarm_reset": {
       "name": "Alarm reset",
-      "description": "Reset first pending alarm."
+      "description": "Reset first pending alarm.",
+      "fields": {
+        "device_id": {
+          "name": "Device",
+          "description": "Select the Pluggit device."
+        }
+      }
+    },
+    "clear_adaptive_event_stack": {
+      "name": "Clear adaptive event stack",
+      "description": "Clear all events from the adaptive event stack. This will remove all active adaptive events and reset the adaptive state to \"none\".",
+      "fields": {
+        "device_id": {
+          "name": "Device",
+          "description": "Select the Pluggit device."
+        }
+      }
     }
   },
   "exceptions": {
@@ -347,8 +493,23 @@
     "invalid_filter_lifetime": {
       "message": "Invalid filter lifetime. Use values between 0 to 360 days."
     },
+    "unsupported_by_firmware": {
+      "message": "The features in this action are not supported by the device's firmware version."
+    },
     "pymodbus_version": {
-      "message": "Pluggit integration requires pymodbus version %s or newer, but %s is installed"
+      "message": "Pluggit integration requires pymodbus version %s or newer, but %s is installed."
+    },
+    "disable_notifications": {
+      "message": "Notifications can be disabled in the integration options."
+    },
+    "filter_remain_notification": {
+      "message": "The filter has reached the end of it's lifetime. Please replace the filter."
+    },
+    "invalid_adaptive_state": {
+      "message": "Invalid adaptive state: {state}. Available states: {available_states}"
+    },
+    "rediscovery_notification": {
+      "message": "A {domain} device with serial number {serial_number} was rediscovered at ip-address: {ip_address}."
     }
   }
 }

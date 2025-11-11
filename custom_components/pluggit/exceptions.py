@@ -1,6 +1,8 @@
-"""Exceptions."""
+"""Dantherm exceptions."""
 
 from homeassistant.exceptions import HomeAssistantError
+
+from .const import DOMAIN
 
 
 class InvalidTimeFormat(HomeAssistantError):
@@ -9,7 +11,7 @@ class InvalidTimeFormat(HomeAssistantError):
     def __init__(self) -> None:
         """Init HA error."""
         super().__init__(
-            translation_domain="dantherm", translation_key="invalid_timeformat"
+            translation_domain=DOMAIN, translation_key="invalid_timeformat"
         )
 
 
@@ -19,7 +21,7 @@ class InvalidFilterLifetime(HomeAssistantError):
     def __init__(self) -> None:
         """Init HA error."""
         super().__init__(
-            translation_domain="dantherm", translation_key="invalid_filter_lifetime"
+            translation_domain=DOMAIN, translation_key="invalid_filter_lifetime"
         )
 
 
@@ -28,6 +30,33 @@ class InvalidEntity(HomeAssistantError):
 
     def __init__(self) -> None:
         """Init HA error."""
+        super().__init__(translation_domain=DOMAIN, translation_key="invalid_entity")
+
+
+class UnsupportedByFirmware(HomeAssistantError):
+    """Raised when an option is not supported on the firmware."""
+
+    def __init__(self) -> None:
+        """Init HA error."""
         super().__init__(
-            translation_domain="dantherm", translation_key="invalid_entity"
+            translation_domain=DOMAIN, translation_key="unsupported_by_firmware"
+        )
+
+
+class InvalidAdaptiveState(HomeAssistantError):
+    """Raised when an adaptive state is not valid."""
+
+    def __init__(self, state: str, available_states: list[str] | None = None) -> None:
+        """Init HA error."""
+        placeholders = {"state": state}
+
+        if available_states is not None:
+            # Simple comma-separated list - consistent with Home Assistant conventions
+            states_list = ", ".join(available_states)
+            placeholders["available_states"] = states_list
+
+        super().__init__(
+            translation_domain=DOMAIN,
+            translation_key="invalid_adaptive_state",
+            translation_placeholders=placeholders,
         )
