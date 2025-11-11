@@ -37,7 +37,7 @@ jobs:
               echo "target_branch=test" >> $GITHUB_ENV
               echo "dantherm_branch=main" >> $GITHUB_ENV
             else
-              echo "target_branch=main" >> $GITHUB_ENV
+              echo "target_branch=test" >> $GITHUB_ENV
               echo "dantherm_branch=main" >> $GITHUB_ENV
             fi
 
@@ -109,7 +109,7 @@ jobs:
             echo "No changes to commit."
           else
             echo "Committing changes..."
-            git commit -m "🔄 Sync shared code and README from Dantherm"
+            git commit -m "🔄 Sync shared code and README from Dantherm (v$version)"
             git fetch origin ${{ env.target_branch }}
             git push origin HEAD:${{ env.target_branch }}
           fi
