@@ -16,7 +16,7 @@ on:
       target_branch:
         description: 'Target branch to push changes to when manually dispatching'
         required: false
-        default: 'test'
+        default: 'main'
 
 jobs:
   release:
@@ -33,7 +33,7 @@ jobs:
             if [ "${{ github.event.release.prerelease }}" = "true" ]; then
               echo "target_branch=test" >> $GITHUB_ENV
               # Her vælger vi at clone dantherm fra feature/calendar for prereleases
-              echo "target_branch=test" >> $GITHUB_ENV
+              echo "target_branch=main" >> $GITHUB_ENV
               echo "dantherm_branch=main" >> $GITHUB_ENV
             else
               # Almindelig (public) release -> push til main og brug main fra dantherm
