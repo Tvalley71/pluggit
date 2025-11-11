@@ -34,10 +34,10 @@ jobs:
 
             # Hvis release er en prerelease, sæt target_branch til test (eller anden ønsket branch)
             if [ "${{ github.event.release.prerelease }}" = "true" ]; then
-              echo "target_branch=test" >> $GITHUB_ENV
+              echo "target_branch=main" >> $GITHUB_ENV
               echo "dantherm_branch=main" >> $GITHUB_ENV
             else
-              echo "target_branch=test" >> $GITHUB_ENV
+              echo "target_branch=main" >> $GITHUB_ENV
               echo "dantherm_branch=main" >> $GITHUB_ENV
             fi
 
