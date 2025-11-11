@@ -2,35 +2,68 @@
   "config": {
     "step": {
       "user": {
-        "title": "Modbus Connectie",
+        "title": "Pluggit Configuration",
+        "description": "Configureer apparaatverbindingsinstellingen.",
         "data": {
-          "host": "Voer het ip-address in van uw apparaat",
+          "host": "Apparaat IP-adres",
           "name": "Voer prefix in voor de apparaat entiteiten",
-          "port": "Voer de TCP poort in waarop verbinding moet worden gemaakt met het apparaat",
-          "scan_interval": "Voer de pollingfrequentie van de modbus-registers in seconden in"
+          "port": "TCP-poortnummer"
         }
       }
     },
     "error": {
-      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+      "invalid_host": "Ongeldige host of IP-adres.",
+      "cannot_connect": "Kan geen verbinding maken.",
+      "already_configured": "Apparaat is al geconfigureerd."
     },
     "abort": {
-      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+      "invalid_host": "Ongeldige host of IP-adres.",
+      "already_configured": "Apparaat is al geconfigureerd."
     }
   },
   "options": {
     "step": {
-        "init": {
-            "title": "Pluggit Integratie Configuratie",
-            "data": {
-                "boost_mode_trigger": "Boost-modus Trigger Entiteit",
-                "eco_mode_trigger": "Eco-modus Trigger Entiteit",
-                "home_mode_trigger": "Thuis-modus Trigger Entiteit"
-            }
+      "init": {
+        "title": "Pluggit Configuratie",
+        "description": "## Welkom bij de Pluggit Integratie! 🏡\n\nDeze integratie is gemaakt door Tvalley71 voor de Home Assistant gemeenschap. U staat op het punt geavanceerde instellingen te configureren voor uw Pluggit ventilatieunit.\n\n\n☕ Als deze integratie u helpt, zou ik de erkenning in de vorm van een ster ⭐ op de integratie op GitHub of misschien een kopje koffie op echt waarderen:\nhttps://www.buymeacoffee.com/tvalley71\nhttps://github.com/Tvalley71/pluggit\n\n\n\nU wordt door 3 configuratiestappen geleid.",
+        "data": {
+          "continue": "Doorgaan"
         }
+      },
+      "network": {
+        "title": "Netwerkinstellingen",
+        "description": "Configureer apparaatverbinding en data-updatefrequentie.",
+        "data": {
+          "host": "Apparaat IP-adres",
+          "port": "TCP-poortnummer",
+          "polling_speed": "Data-updatefrequentie"
+        }
+      },
+      "triggers": {
+        "title": "Adaptieve Triggers & Planning",
+        "description": "Configureer entiteiten die verschillende ventilatiemodi activeren en kalenderplanning.",
+        "data": {
+          "boost_mode_trigger": "Boost-modus Trigger Entiteit",
+          "eco_mode_trigger": "Eco-modus Trigger Entiteit",
+          "home_mode_trigger": "Thuis-modus Trigger Entiteit",
+          "link_calendar_to_primary": "Kalender koppelen aan primair apparaat"
+        }
+      },
+      "advanced": {
+        "title": "Geavanceerde Opties",
+        "description": "Configureer geavanceerd gedrag en weergaveopties.",
+        "data": {
+          "disable_temperature_unknown": "Temperatuursensoren niet onbekend maken in bypass/zomer modi",
+          "disable_notifications": "Meldingen uitschakelen"
+        }
+      }
     },
     "error": {
-        "invalid_entity": "Ongeldige entiteit-ID. Voer een geldige binaire sensor of invoer-boolean in."
+      "invalid_host": "Ongeldige host of IP-adres.",
+      "invalid_entity": "Ongeldige entiteit-ID. Voer een geldige binaire sensor of invoer-boolean in."
+    },
+    "abort": {
+      "aborted_by_user": "Configuratie geannuleerd door gebruiker."
     }
   },
   "entity": {
@@ -38,14 +71,21 @@
       "filter_reset": { "name": "Filter Resetten" },
       "alarm_reset": { "name": "Foutmelding Resetten" }
     },
+    "calendar": {
+      "calendar": { "name": "Kalender" }
+    },
     "cover": {
       "bypass_damper": { "name": "Demper Bypass" }
     },
     "number": {
       "filter_lifetime": { "name": "Levensduur Filter" },
+      "humidity_setpoint": { "name": "Vochtigheidsinstelwaarde" },
+      "humidity_setpoint_summer": { "name": "Vochtigheidsinstelwaarde (Zomer)" },
       "bypass_minimum_temperature": { "name": "Bypass Minimum Temperatuur" },
       "bypass_maximum_temperature": { "name": "Bypass Maximum Temperatuur" },
       "manual_bypass_duration": { "name": "Duur Manuele Bypass" },
+      "bypass_minimum_temperature_summer": { "name": "Bypass Minimum Temperatuur (Zomer)" },
+      "bypass_maximum_temperature_summer": { "name": "Bypass Maximum Temperatuur (Zomer)" },
       "boost_mode_timeout": { "name": "Boost-modus Time-out" },
       "eco_mode_timeout": { "name": "Eco-modus Time-out" },
       "home_mode_timeout": { "name": "Thuis-modus Time-out" }
@@ -180,6 +220,7 @@
           "boost": "Boost-modus",
           "eco": "Eco-modus",
           "home": "Thuis-modus",
+          "level_0": "Niveau 0",
           "level_1": "Niveau 1",
           "level_2": "Niveau 2",
           "level_3": "Niveau 3",
@@ -195,16 +236,48 @@
       "fan1_speed": { "name": "Snelheid Ventilator 1" },
       "fan2_speed": { "name": "Snelheid Ventilator 2" },
       "humidity": { "name": "Vochtigheid" },
+      "humidity_level": {
+        "name": "Vochtigheidsniveau",
+        "state": {
+          "0": "Zeer droog",
+          "1": "Droog",
+          "2": "Normaal",
+          "3": "Hoog"
+        }
+      },
       "air_quality": { "name": "Luchtkwaliteit" },
+      "air_quality_level": {
+        "name": "Luchtkwaliteitsniveau",
+        "state": {
+          "0": "Uitstekend",
+          "1": "Acceptabel",
+          "2": "Gemiddeld",
+          "3": "Slecht"
+        }
+      },
       "exhaust_temperature": { "name": "Uitlaattemperatuur" },
       "extract_temperature": { "name": "Afzuigtemperatuur" },
       "supply_temperature": { "name": "Aanvoertemperatuur" },
       "outdoor_temperature": { "name": "Buitentemperatuur" },
       "room_temperature": { "name": "Kamertemperatuur" },
-      "filter_remain": { "name": "Levenduur Filter" },
-      "filter_remain_level": { "name": "Levensduur Filter Niveau" },
+      "filter_remain": {
+        "name": "Levenduur Filter",
+        "state": {
+          "0": "Vervang het filter nu."
+        }
+      },
+      "filter_remain_level": {
+        "name": "Filterrestlevensduur niveau",
+        "state": {
+          "0": "Uitstekend",
+          "1": "Goed",
+          "2": "Slecht",
+          "3": "Nu vervangen"
+        }
+      },
       "work_time": { "name": "Inschakelduur" },
-      "internal_preheater_dutycycle": { "name": "Voorverwarmer Inschakelduur"}
+      "internal_preheater_dutycycle": { "name": "Voorverwarmer Inschakelduur"},
+      "features": { "name": "Features" }
     },
     "switch": {
       "away_mode": { "name": "Afwezigheidsmodus" },
@@ -224,6 +297,13 @@
     }
   },
   "selector": {
+    "polling_speed": {
+      "options": {
+        "fast": "Snel (10 seconden)",
+        "normal": "Normaal (30 seconden)",
+        "slow": "Langzaam (60 seconden)"
+      }
+    },
     "operations": {
       "options": {
         "standby": "Standby",
@@ -262,6 +342,10 @@
       "name": "Status Instellen",
       "description": "De status van de ventilatie-unit regelen met een actieoproep.",
       "fields": {
+        "device_id": {
+          "name": "Apparaat",
+          "description": "Selecteer het Pluggit-apparaat."
+        },
         "operation_selection": {
           "name": "Bedieningsselectie",
           "description": "Selecteer de gewenste bedieningsmodus. De modus Standby wordt na ongeveer 4 uur teruggezet naar het handmatige niveau 3."
@@ -282,10 +366,6 @@
           "name": "Open Haardmodus",
           "description": "Schakel de open haardmodus in of uit. De open haardmodus is voor een beperkte tijd ingeschakeld."
         },
-        "disable_bypass": {
-          "name": "Bypass uitschakelen",
-          "description": "Schakel de bypass-klep uit."
-        },
         "manual_bypass_mode": {
           "name": "Manuele Bypassmodus",
           "description": "Manuele bypassmodus in- of uitschakelen. De manuele bypassmodus is beperkt tot de ingestelde handmatige bypassduur."
@@ -296,21 +376,13 @@
       "name": "Configuratie instellen",
       "description": "Pas de configuratie-instellingen van het Pluggit-apparaat aan.",
       "fields": {
-        "bypass_minimum_temperature": {
-          "name": "Minimale bypass-temperatuur",
-          "description": "Stel de minimale temperatuur in voor bypass-bediening."
-        },
-        "bypass_maximum_temperature": {
-          "name": "Maximale bypass-temperatuur",
-          "description": "Stel de maximale temperatuur in voor bypass-bediening."
+        "device_id": {
+          "name": "Apparaat",
+          "description": "Selecteer het Pluggit-apparaat."
         },
         "filter_lifetime": {
           "name": "Filter levensduur",
           "description": "Stel de levensduur van het filter in (dagen)."
-        },
-        "manual_bypass_duration": {
-          "name": "Duur van handmatige bypass",
-          "description": "Stel de duur van de handmatige bypass-modus in (minuten)."
         },
         "night_mode": {
           "name": "Nachtmodus",
@@ -330,13 +402,87 @@
         }
       }
     },
+    "set_configuration_2": {
+      "name": "Configuratie instellen 2",
+      "description": "Pas de configuratie-instellingen van het Pluggit-apparaat aan. Opmerking: De volgende velden worden alleen ondersteund op apparaten met firmwareversie 2.70 of nieuwer.",
+      "fields": {
+        "device_id": {
+          "name": "Apparaat",
+          "description": "Selecteer het Pluggit-apparaat."
+        },
+        "bypass_minimum_temperature": {
+          "name": "Bypass minimum temperatuur",
+          "description": "Stel de minimale temperatuur in voor bypass-bediening."
+        },
+        "bypass_maximum_temperature": {
+          "name": "Bypass maximum temperatuur",
+          "description": "Stel de maximale temperatuur in voor bypass-bediening."
+        },
+        "humidity_setpoint": {
+          "name": "Vochtigheidsinstelwaarde",
+          "description": "Stel de vochtigheidsinstelwaarde in."
+        },
+        "manual_bypass_duration": {
+          "name": "Duur manuele bypass",
+          "description": "Stel de duur van de manuele bypass-modus in (minuten)."
+        },
+        "disable_bypass": {
+          "name": "Bypass uitschakelen",
+          "description": "Schakel de bypass-klep uit."
+        }
+      }
+    },
+    "set_configuration_3": {
+      "name": "Configuratie instellen 3",
+      "description": "Pas de configuratie-instellingen van het Pluggit-apparaat aan. Opmerking: De volgende velden worden alleen ondersteund op apparaten met firmwareversie 3.08 of nieuwer.",
+      "fields": {
+        "device_id": {
+          "name": "Apparaat",
+          "description": "Selecteer het Pluggit-apparaat."
+        },
+        "bypass_minimum_temperature_summer": {
+          "name": "Bypass minimum temperatuur (zomer)",
+          "description": "Stel de minimale temperatuur in voor bypass-bediening."
+        },
+        "bypass_maximum_temperature_summer": {
+          "name": "Bypass maximum temperatuur (zomer)",
+          "description": "Stel de maximale temperatuur in voor bypass-bediening."
+        },
+        "humidity_setpoint_summer": {
+          "name": "Vochtigheidsinstelwaarde (zomer)",
+          "description": "Stel de vochtigheidsinstelwaarde in."
+        }
+      }
+    },
     "filter_reset": {
       "name": "Filter Resetten",
-      "description": "Reset de resterende dagen van het filter naar de filterlevensduur."
+      "description": "Reset de resterende dagen van het filter naar de filterlevensduur.",
+      "fields": {
+        "device_id": {
+          "name": "Apparaat",
+          "description": "Selecteer het Pluggit-apparaat."
+        }
+      }
     },
     "alarm_reset": {
       "name": "Foutmelding Resetten",
-      "description": "Reset de eerste in behandeling zijnde foutmelding."
+      "description": "Reset de eerste in behandeling zijnde foutmelding.",
+      "fields": {
+        "device_id": {
+          "name": "Apparaat",
+          "description": "Selecteer het Pluggit-apparaat."
+        }
+      }
+    },
+    "clear_adaptive_event_stack": {
+      "name": "Adaptive Ereigniswarteschlange löschen",
+      "description": "Verwijder alle gebeurtenissen uit de adaptieve gebeurteniswachtrij. Hierdoor worden alle actieve adaptieve gebeurtenissen verwijderd en wordt de adaptieve status teruggezet naar \"geen\".",
+      "fields": {
+        "device_id": {
+          "name": "Apparaat",
+          "description": "Selecteer het Pluggit-apparaat."
+        }
+      }
     }
   },
   "exceptions": {
@@ -346,8 +492,23 @@
     "invalid_filter_lifetime": {
       "message": "Ongeldige filter levensduur. Gebruik waarden tussen 0 en 360 dagen."
     },
+    "unsupported_by_firmware": {
+      "message": "De functies in deze actie worden niet ondersteund door de firmwareversie van het apparaat."
+    },
     "pymodbus_version": {
-      "message": "De Pluggit-integratie vereist pymodbus versie %s of hoger, maar versie %s is geïnstalleerd"
+      "message": "De Pluggit-integratie vereist pymodbus versie %s of hoger, maar versie %s is geïnstalleerd."
+    },
+    "disable_notifications": {
+      "message": "Meldingen kunnen worden uitgeschakeld in de integratie-opties."
+    },
+    "filter_remain_notification": {
+      "message": "Het filter heeft het einde van zijn levensduur bereikt. Vervang het filter alstublieft."
+    },
+    "invalid_adaptive_state": {
+      "message": "Ongeldige adaptieve status: {state}. Beschikbare statussen: {available_states}"
+    },
+    "rediscovery_notification": {
+      "message": "Een {domain}-apparaat met serienummer {serial_number} is opnieuw ontdekt op IP-adres {ip_address}."
     }
   }
 }

@@ -1,10 +1,10 @@
 """The device mapping."""
 
 from dataclasses import dataclass
-from enum import Enum
 from typing import Any, Final
 
 from homeassistant.components.button import ButtonEntityDescription
+from homeassistant.components.calendar import CalendarEntityDescription
 from homeassistant.components.cover import (
     CoverDeviceClass,
     CoverEntityDescription,
@@ -36,12 +36,37 @@ from .modbus import (
 
 REQUIRED_PYMODBUS_VERSION = "3.7.4"
 
-SERVICE_SET_STATE = "set_state"
-SERVICE_SET_CONFIGURATION = "set_configuration"
-SERVICE_FILTER_RESET = "filter_reset"
-SERVICE_ALARM_RESET = "alarm_reset"
+REQUIRED_FIRMWARE_2 = 2.70
+REQUIRED_FIRMWARE_3 = 3.08
+
+# Polling interval constants
+SCAN_INTERVAL_FAST = 10  # Fast polling - legacy default, good for real-time monitoring
+SCAN_INTERVAL_NORMAL = 30  # Normal polling - current default for new installations
+SCAN_INTERVAL_SLOW = 60  # Slow polling - conserves bandwidth
+
+# For config flow options
+CONF_POLLING_SPEED: Final = "polling_speed"
+POLLING_OPTIONS = {
+    "fast": SCAN_INTERVAL_FAST,
+    "normal": SCAN_INTERVAL_NORMAL,
+    "slow": SCAN_INTERVAL_SLOW,
+}
+
+POLLING_OPTIONS_LIST = ["fast", "normal", "slow"]
+
+SERVICE_SET_STATE: Final = "set_state"
+SERVICE_SET_CONFIGURATION: Final = "set_configuration"
+SERVICE_SET_CONFIGURATION_2: Final = "set_configuration_2"
+SERVICE_SET_CONFIGURATION_3: Final = "set_configuration_3"
+SERVICE_FILTER_RESET: Final = "filter_reset"
+SERVICE_ALARM_RESET: Final = "alarm_reset"
+SERVICE_CLEAR_ADAPTIVE_EVENT_STACK: Final = "clear_adaptive_event_stack"
+ATTR_DEVICE_ID: Final = "device_id"
 
 ATTR_BYPASS_DAMPER: Final = "bypass_damper"
+
+ATTR_CALENDAR: Final = "calendar"
+CONF_LINK_TO_PRIMARY_CALENDAR: Final = "link_calendar_to_primary"
 
 ATTR_OPERATION_SELECTION: Final = "operation_selection"
 STATE_STANDBY: Final = "standby"
@@ -64,28 +89,30 @@ STATE_FAN_LEVEL_2: Final = "2"
 STATE_FAN_LEVEL_3: Final = "3"
 STATE_FAN_LEVEL_4: Final = "4"
 
-ATTR_WEEK_PROGRAM_SELECTION: Final = "week_program_selection"
-STATE_WEEKPROGRAM_1: Final = "0"
-STATE_WEEKPROGRAM_2: Final = "1"
-STATE_WEEKPROGRAM_3: Final = "2"
-STATE_WEEKPROGRAM_4: Final = "3"
-STATE_WEEKPROGRAM_5: Final = "4"
-STATE_WEEKPROGRAM_6: Final = "5"
-STATE_WEEKPROGRAM_7: Final = "6"
-STATE_WEEKPROGRAM_8: Final = "7"
-STATE_WEEKPROGRAM_9: Final = "8"
-STATE_WEEKPROGRAM_10: Final = "9"
-STATE_WEEKPROGRAM_11: Final = "10"
-
-ATTR_BOOST_OPERATION_SELECTION: Final = "boost_operation_selection"
+STATE_LEVEL_0: Final = "level_0"
+STATE_LEVEL_1: Final = "level_1"
+STATE_LEVEL_2: Final = "level_2"
 STATE_LEVEL_3: Final = "level_3"
 STATE_LEVEL_4: Final = "level_4"
+
+ATTR_WEEK_PROGRAM_SELECTION: Final = "week_program_selection"
+STATE_WEEK_PROGRAM_1: Final = "0"
+STATE_WEEK_PROGRAM_2: Final = "1"
+STATE_WEEK_PROGRAM_3: Final = "2"
+STATE_WEEK_PROGRAM_4: Final = "3"
+STATE_WEEK_PROGRAM_5: Final = "4"
+STATE_WEEK_PROGRAM_6: Final = "5"
+STATE_WEEK_PROGRAM_7: Final = "6"
+STATE_WEEK_PROGRAM_8: Final = "7"
+STATE_WEEK_PROGRAM_9: Final = "8"
+STATE_WEEK_PROGRAM_10: Final = "9"
+STATE_WEEK_PROGRAM_11: Final = "10"
+
+ATTR_BOOST_OPERATION_SELECTION: Final = "boost_operation_selection"
 
 ATTR_ECO_OPERATION_SELECTION: Final = "eco_operation_selection"
 
 ATTR_HOME_OPERATION_SELECTION: Final = "home_operation_selection"
-STATE_LEVEL_1: Final = "level_1"
-STATE_LEVEL_2: Final = "level_2"
 
 ATTR_DEFAULT_OPERATION_SELECTION: Final = "default_operation_selection"
 
@@ -97,8 +124,12 @@ ATTR_FAN1_SPEED: Final = "fan1_speed"
 ATTR_FAN2_SPEED: Final = "fan2_speed"
 
 ATTR_HUMIDITY = "humidity"
+ATTR_HUMIDITY_LEVEL = "humidity_level"
+ATTR_HUMIDITY_SETPOINT: Final = "humidity_setpoint"
+ATTR_HUMIDITY_SETPOINT_SUMMER: Final = "humidity_setpoint_summer"
 
 ATTR_AIR_QUALITY: Final = "air_quality"
+ATTR_AIR_QUALITY_LEVEL: Final = "air_quality_level"
 
 ATTR_EXHAUST_TEMPERATURE: Final = "exhaust_temperature"
 
@@ -110,19 +141,23 @@ ATTR_OUTDOOR_TEMPERATURE: Final = "outdoor_temperature"
 
 ATTR_ROOM_TEMPERATURE: Final = "room_temperature"
 
+CONF_DISABLE_TEMPERATURE_UNKNOWN: Final = "disable_temperature_unknown"
+
 ATTR_AWAY_MODE: Final = "away_mode"
 
 ATTR_SUMMER_MODE: Final = "summer_mode"
 
+CONF_BOOST_MODE_TRIGGER: Final = "boost_mode_trigger"
 ATTR_BOOST_MODE: Final = "boost_mode"
 ATTR_BOOST_MODE_TIMEOUT: Final = "boost_mode_timeout"
 
+CONF_ECO_MODE_TRIGGER: Final = "eco_mode_trigger"
 ATTR_ECO_MODE: Final = "eco_mode"
 ATTR_ECO_MODE_TIMEOUT: Final = "eco_mode_timeout"
 
+CONF_HOME_MODE_TRIGGER: Final = "home_mode_trigger"
 ATTR_HOME_MODE: Final = "home_mode"
 ATTR_HOME_MODE_TIMEOUT: Final = "home_mode_timeout"
-
 
 ATTR_FIREPLACE_MODE: Final = "fireplace_mode"
 
@@ -134,6 +169,8 @@ ATTR_MANUAL_BYPASS_MODE: Final = "manual_bypass_mode"
 ATTR_MANUAL_BYPASS_DURATION: Final = "manual_bypass_duration"
 ATTR_BYPASS_MINIMUM_TEMPERATURE: Final = "bypass_minimum_temperature"
 ATTR_BYPASS_MAXIMUM_TEMPERATURE: Final = "bypass_maximum_temperature"
+ATTR_BYPASS_MINIMUM_TEMPERATURE_SUMMER: Final = "bypass_minimum_temperature_summer"
+ATTR_BYPASS_MAXIMUM_TEMPERATURE_SUMMER: Final = "bypass_maximum_temperature_summer"
 ATTR_DISABLE_BYPASS: Final = "disable_bypass"
 ATTR_BYPASS_AVAILABLE: Final = "bypass_available"
 
@@ -148,11 +185,16 @@ ATTR_WORK_TIME: Final = "work_time"
 ATTR_ADAPTIVE_STATE: Final = "adaptive_state"
 STATE_NONE: Final = "none"
 
+ATTR_INTERNAL_PREHEATER: Final = "internal_preheater"
 ATTR_INTERNAL_PREHEATER_DUTYCYCLE: Final = "internal_preheater_dutycycle"
 
 ATTR_FILTER_RESET: Final = "filter_reset"
 
 ATTR_ALARM_RESET: Final = "alarm_reset"
+
+ATTR_FEATURES: Final = "features"
+
+CONF_DISABLE_NOTIFICATIONS: Final = "disable_notifications"
 
 OPERATION_SELECTIONS = [
     STATE_STANDBY,
@@ -174,17 +216,23 @@ FAN_LEVEL_SELECTIONS = [
 ]
 
 WEEK_PROGRAM_SELECTIONS = [
-    STATE_WEEKPROGRAM_1,
-    STATE_WEEKPROGRAM_2,
-    STATE_WEEKPROGRAM_3,
-    STATE_WEEKPROGRAM_4,
-    STATE_WEEKPROGRAM_5,
-    STATE_WEEKPROGRAM_6,
-    STATE_WEEKPROGRAM_7,
-    STATE_WEEKPROGRAM_8,
-    STATE_WEEKPROGRAM_9,
-    STATE_WEEKPROGRAM_10,
-    STATE_WEEKPROGRAM_11,
+    STATE_WEEK_PROGRAM_1,
+    STATE_WEEK_PROGRAM_2,
+    STATE_WEEK_PROGRAM_3,
+    STATE_WEEK_PROGRAM_4,
+    STATE_WEEK_PROGRAM_5,
+    STATE_WEEK_PROGRAM_6,
+    STATE_WEEK_PROGRAM_7,
+    STATE_WEEK_PROGRAM_8,
+    STATE_WEEK_PROGRAM_9,
+    STATE_WEEK_PROGRAM_10,
+    STATE_WEEK_PROGRAM_11,
+]
+
+ADAPTIVE_TRIGGERS = [
+    CONF_BOOST_MODE_TRIGGER,
+    CONF_ECO_MODE_TRIGGER,
+    CONF_HOME_MODE_TRIGGER,
 ]
 
 BOOST_OPERATION_SELECTIONS = [STATE_LEVEL_2, STATE_LEVEL_3, STATE_LEVEL_4]
@@ -211,6 +259,7 @@ STATE_PRIORITIES = {
     STATE_WEEKPROGRAM: 0,
     STATE_AUTOMATIC: 1,
     STATE_STANDBY: 2,
+    STATE_LEVEL_0: 2,
     STATE_LEVEL_1: 3,
     STATE_LEVEL_2: 4,
     STATE_LEVEL_3: 5,
@@ -292,15 +341,7 @@ class BypassDamperState(int):
     Closed = 0
 
 
-class ABSwitchPosition(Enum):
-    """Dantherm A/B switch position class."""
-
-    Unknown = 0
-    A = 1
-    B = 2
-
-
-@dataclass
+@dataclass(frozen=True)
 class DanthermEntityDescription(EntityDescription):
     """Dantherm Base Entity Description."""
 
@@ -324,17 +365,24 @@ class DanthermEntityDescription(EntityDescription):
     data_getavailable: str | None = None
     data_getunknown: str | None = None
 
-    component_class: ComponentClass | None = None
+    component_class: int | None = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class DanthermButtonEntityDescription(
     DanthermEntityDescription, ButtonEntityDescription
 ):
     """Dantherm Button Entity Description."""
 
 
-@dataclass
+@dataclass(frozen=True)
+class DanthermCalendarEntityDescription(
+    DanthermEntityDescription, CalendarEntityDescription
+):
+    """Dantherm Calendar Entity Description."""
+
+
+@dataclass(frozen=True)
 class DanthermCoverEntityDescription(DanthermEntityDescription, CoverEntityDescription):
     """Dantherm Cover Entity Description."""
 
@@ -350,7 +398,7 @@ class DanthermCoverEntityDescription(DanthermEntityDescription, CoverEntityDescr
     state_closed: int | None = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class DanthermNumberEntityDescription(
     DanthermEntityDescription, NumberEntityDescription
 ):
@@ -359,7 +407,7 @@ class DanthermNumberEntityDescription(
     data_precision: float | None = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class DanthermSelectEntityDescription(
     DanthermEntityDescription, SelectEntityDescription
 ):
@@ -368,7 +416,7 @@ class DanthermSelectEntityDescription(
     data_bitwise_and: int | None = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class DanthermSensorEntityDescription(
     DanthermEntityDescription, SensorEntityDescription
 ):
@@ -377,7 +425,7 @@ class DanthermSensorEntityDescription(
     data_precision: int | None = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class DanthermSwitchEntityDescription(
     DanthermEntityDescription, SwitchEntityDescription
 ):
@@ -392,7 +440,7 @@ class DanthermSwitchEntityDescription(
     icon_off: str | None = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class DanthermTimeTextEntityDescription(
     DanthermEntityDescription, TextEntityDescription
 ):
@@ -412,6 +460,12 @@ BUTTONS: tuple[DanthermButtonEntityDescription, ...] = (
         data_setinternal="alarm_reset",
         data_class=DataClass.UInt32,
     ),
+)
+
+CALENDAR: DanthermCalendarEntityDescription = DanthermCalendarEntityDescription(
+    key=ATTR_CALENDAR,
+    icon="mdi:calendar",
+    data_getinternal=ATTR_CALENDAR,
 )
 
 COVERS: tuple[DanthermCoverEntityDescription, ...] = (
@@ -447,12 +501,44 @@ NUMBERS: tuple[DanthermNumberEntityDescription, ...] = (
         entity_category=EntityCategory.CONFIG,
     ),
     DanthermNumberEntityDescription(
+        key=ATTR_HUMIDITY_SETPOINT,
+        icon="mdi:water-percent",
+        data_setinternal=ATTR_HUMIDITY_SETPOINT,
+        data_getinternal=ATTR_HUMIDITY_SETPOINT,
+        firmware_exclude_if_below=REQUIRED_FIRMWARE_2,
+        native_max_value=65,
+        native_min_value=35,
+        native_step=1,
+        native_unit_of_measurement="%",
+        mode=NumberMode.SLIDER,
+        entity_registry_visible_default=True,
+        entity_registry_enabled_default=False,
+        entity_category=EntityCategory.CONFIG,
+        component_class=ComponentClass.RH_Senser,
+    ),
+    DanthermNumberEntityDescription(
+        key=ATTR_HUMIDITY_SETPOINT_SUMMER,
+        icon="mdi:water-percent",
+        data_setinternal=ATTR_HUMIDITY_SETPOINT_SUMMER,
+        data_getinternal=ATTR_HUMIDITY_SETPOINT_SUMMER,
+        firmware_exclude_if_below=REQUIRED_FIRMWARE_3,
+        native_max_value=65,
+        native_min_value=35,
+        native_step=1,
+        native_unit_of_measurement="%",
+        mode=NumberMode.SLIDER,
+        entity_registry_visible_default=True,
+        entity_registry_enabled_default=False,
+        entity_category=EntityCategory.CONFIG,
+        component_class=ComponentClass.RH_Senser,
+    ),
+    DanthermNumberEntityDescription(
         key=ATTR_BYPASS_MINIMUM_TEMPERATURE,
         icon="mdi:thermometer-minus",
         data_getavailable=ATTR_BYPASS_AVAILABLE,
         data_setinternal=ATTR_BYPASS_MINIMUM_TEMPERATURE,
         data_getinternal=ATTR_BYPASS_MINIMUM_TEMPERATURE,
-        firmware_exclude_if_below=2.70,
+        firmware_exclude_if_below=REQUIRED_FIRMWARE_2,
         native_max_value=15,
         native_min_value=12,
         native_step=0.1,
@@ -470,7 +556,7 @@ NUMBERS: tuple[DanthermNumberEntityDescription, ...] = (
         data_getavailable=ATTR_BYPASS_AVAILABLE,
         data_setinternal=ATTR_BYPASS_MAXIMUM_TEMPERATURE,
         data_getinternal=ATTR_BYPASS_MAXIMUM_TEMPERATURE,
-        firmware_exclude_if_below=2.70,
+        firmware_exclude_if_below=REQUIRED_FIRMWARE_2,
         native_max_value=27,
         native_min_value=21,
         native_step=0.1,
@@ -487,13 +573,49 @@ NUMBERS: tuple[DanthermNumberEntityDescription, ...] = (
         data_getavailable=ATTR_BYPASS_AVAILABLE,
         data_setinternal=ATTR_MANUAL_BYPASS_DURATION,
         data_getinternal=ATTR_MANUAL_BYPASS_DURATION,
-        firmware_exclude_if_below=2.70,
+        firmware_exclude_if_below=REQUIRED_FIRMWARE_2,
         native_max_value=480,
         native_min_value=60,
         native_step=15,
         device_class=NumberDeviceClass.DURATION,
         native_unit_of_measurement="min",
         mode=NumberMode.BOX,
+        entity_registry_visible_default=True,
+        entity_registry_enabled_default=False,
+        entity_category=EntityCategory.CONFIG,
+        component_class=ComponentClass.Bypass,
+    ),
+    DanthermNumberEntityDescription(
+        key=ATTR_BYPASS_MINIMUM_TEMPERATURE_SUMMER,
+        icon="mdi:thermometer-minus",
+        data_getavailable=ATTR_BYPASS_AVAILABLE,
+        data_setinternal=ATTR_BYPASS_MINIMUM_TEMPERATURE_SUMMER,
+        data_getinternal=ATTR_BYPASS_MINIMUM_TEMPERATURE_SUMMER,
+        firmware_exclude_if_below=REQUIRED_FIRMWARE_3,
+        native_max_value=17,
+        native_min_value=12,
+        native_step=0.1,
+        device_class=NumberDeviceClass.TEMPERATURE,
+        native_unit_of_measurement="°C",
+        mode=NumberMode.SLIDER,
+        entity_registry_visible_default=True,
+        entity_registry_enabled_default=False,
+        entity_category=EntityCategory.CONFIG,
+        component_class=ComponentClass.Bypass,
+    ),
+    DanthermNumberEntityDescription(
+        key=ATTR_BYPASS_MAXIMUM_TEMPERATURE_SUMMER,
+        icon="mdi:thermometer-plus",
+        data_getavailable=ATTR_BYPASS_AVAILABLE,
+        data_setinternal=ATTR_BYPASS_MAXIMUM_TEMPERATURE_SUMMER,
+        data_getinternal=ATTR_BYPASS_MAXIMUM_TEMPERATURE_SUMMER,
+        firmware_exclude_if_below=REQUIRED_FIRMWARE_3,
+        native_max_value=30,
+        native_min_value=21,
+        native_step=0.1,
+        device_class=NumberDeviceClass.TEMPERATURE,
+        native_unit_of_measurement="°C",
+        mode=NumberMode.SLIDER,
         entity_registry_visible_default=True,
         entity_registry_enabled_default=False,
         entity_category=EntityCategory.CONFIG,
@@ -635,12 +757,31 @@ SENSORS: tuple[DanthermSensorEntityDescription, ...] = (
         component_class=ComponentClass.RH_Senser,
     ),
     DanthermSensorEntityDescription(
+        key=ATTR_HUMIDITY_LEVEL,
+        data_getinternal=ATTR_HUMIDITY_LEVEL,
+        icon="mdi:water-percent",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_visible_default=True,
+        entity_registry_enabled_default=False,
+        component_class=ComponentClass.RH_Senser,
+    ),
+    DanthermSensorEntityDescription(
         key=ATTR_AIR_QUALITY,
         data_getinternal=ATTR_AIR_QUALITY,
+        icon="mdi:molecule-co2",
         data_exclude_if=0,
         native_unit_of_measurement="ppm",
-        device_class=SensorDeviceClass.AQI,
+        device_class=SensorDeviceClass.CO2,
         state_class=SensorStateClass.MEASUREMENT,
+        component_class=ComponentClass.VOC_sensor,
+    ),
+    DanthermSensorEntityDescription(
+        key=ATTR_AIR_QUALITY_LEVEL,
+        data_getinternal=ATTR_AIR_QUALITY_LEVEL,
+        icon="mdi:molecule-co2",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_visible_default=True,
+        entity_registry_enabled_default=False,
         component_class=ComponentClass.VOC_sensor,
     ),
     DanthermSensorEntityDescription(
@@ -696,6 +837,14 @@ SENSORS: tuple[DanthermSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.DURATION,
     ),
     DanthermSensorEntityDescription(
+        key=ATTR_FILTER_REMAIN_LEVEL,
+        icon="mdi:air-filter",
+        data_getinternal=ATTR_FILTER_REMAIN_LEVEL,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_visible_default=True,
+        entity_registry_enabled_default=False,
+    ),
+    DanthermSensorEntityDescription(
         key=ATTR_WORK_TIME,
         icon="mdi:progress-clock",
         data_class=DataClass.UInt32,
@@ -720,20 +869,17 @@ SENSORS: tuple[DanthermSensorEntityDescription, ...] = (
         component_class=ComponentClass.Internal_preheater,
     ),
     DanthermSensorEntityDescription(
-        key=ATTR_FILTER_REMAIN_LEVEL,
-        icon="mdi:air-filter",
-        data_getinternal=ATTR_FILTER_REMAIN_LEVEL,
-        entity_registry_visible_default=True,
-        entity_registry_enabled_default=False,
-    ),
-    DanthermSensorEntityDescription(
         key=ATTR_ADAPTIVE_STATE,
         icon="mdi:information",
         data_getinternal=ATTR_ADAPTIVE_STATE,
         entity_category=EntityCategory.DIAGNOSTIC,
-        entity_registry_visible_default=True,
-        entity_registry_enabled_default=False,
     ),
+    # DanthermSensorEntityDescription(
+    #    key=ATTR_FEATURES,
+    #    icon="mdi:function",
+    #    data_getinternal=ATTR_FEATURES,
+    #    entity_category=EntityCategory.DIAGNOSTIC,
+    # ),
 )
 
 SWITCHES: tuple[DanthermSwitchEntityDescription, ...] = (
@@ -823,10 +969,12 @@ SWITCHES: tuple[DanthermSwitchEntityDescription, ...] = (
         key=ATTR_DISABLE_BYPASS,
         data_setinternal=ATTR_DISABLE_BYPASS,
         data_getinternal=ATTR_DISABLE_BYPASS,
+        firmware_exclude_if_below=REQUIRED_FIRMWARE_2,
         icon_on="mdi:repeat-off",
         icon_off="mdi:repeat",
         component_class=ComponentClass.Bypass,
         device_class=SwitchDeviceClass.SWITCH,
+        entity_category=EntityCategory.CONFIG,
         entity_registry_visible_default=True,
         entity_registry_enabled_default=False,
     ),
