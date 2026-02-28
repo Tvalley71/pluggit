@@ -51,9 +51,9 @@ jobs:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          fetch-depth: 0
           ref: ${{ env.target_branch }}
-
+    
       - name: 🔢 Set version number in manifest
         run: |
           echo "Using version: $version"
@@ -126,4 +126,4 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: dist/pluggit.zip
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          token: ${{ github.token }}
