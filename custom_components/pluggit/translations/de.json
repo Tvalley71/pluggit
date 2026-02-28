@@ -25,7 +25,7 @@
     "step": {
       "init": {
         "title": "Pluggit Configuration",
-        "description": "## Willkommen zur Pluggit Integration! 🏡\n\nDiese Integration ist von Tvalley71 für die Home Assistant Community erstellt. Sie sind dabei, erweiterte Einstellungen für Ihr Pluggit-Lüftungsgerät zu konfigurieren.\n\n\n☕ Wenn Ihnen diese Integration hilft, würde ich die Anerkennung in Form eines Sterns ⭐ auf der Integration auf GitHub oder vielleicht einer Tasse Kaffee unter wirklich schätzen:\nhttps://www.buymeacoffee.com/tvalley71\nhttps://github.com/Tvalley71/pluggit\n\n\n\nSie werden durch 3 Konfigurationsschritte geführt.",
+        "description": "## Willkommen zur Pluggit Integration! 🏡\n\nDiese Integration ist von Tvalley71 für die Home Assistant Community erstellt. Sie sind dabei, erweiterte Einstellungen für Ihr Pluggit-Lüftungsgerät zu konfigurieren.\n\n\n☕ Wenn Ihnen diese Integration hilft, würde ich die Anerkennung in Form eines Sterns ⭐ auf der Integration auf GitHub oder vielleicht einer Tasse Kaffee unter wirklich schätzen:\n{buymeacoffee_url}\n{github_url}\n\n\n\nSie werden durch 3 Konfigurationsschritte geführt.",
         "data": {
           "continue": "Weiter"
         }

@@ -25,7 +25,7 @@
     "step": {
       "init": {
         "title": "Pluggit Konfiguration",
-        "description": "## Velkommen til Pluggit Integrationen! 🏡\n\nDenne integration er skabt af Tvalley71 til Home Assistant fællesskabet. Du er ved at konfigurere avancerede indstillinger for din Pluggit ventilationsenhed.\n\n\n☕ Hvis denne integration hjælper dig, ville jeg virkelig sætte pris på anerkendelsen i form af en stjerne ⭐ på integrationen på GitHub eller måske en kop kaffe på:\nhttps://www.buymeacoffee.com/tvalley71\nhttps://github.com/Tvalley71/pluggit\n\n\n\nDu vil blive guidet gennem 3 konfigurationstrin.",
+        "description": "## Velkommen til Pluggit Integrationen! 🏡\n\nDenne integration er skabt af Tvalley71 til Home Assistant fællesskabet. Du er ved at konfigurere avancerede indstillinger for din Pluggit ventilationsenhed.\n\n\n☕ Hvis denne integration hjælper dig, ville jeg virkelig sætte pris på anerkendelsen i form af en stjerne ⭐ på integrationen på GitHub eller måske en kop kaffe på:\n{buymeacoffee_url}\n{github_url}\n\n\n\nDu vil blive guidet gennem 3 konfigurationstrin.",
         "data": {
           "continue": "Fortsæt"
         }
