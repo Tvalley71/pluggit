@@ -29,7 +29,7 @@ Known supported units:
 <!-- START:shared-section no-replace -->
 The listed units are known to work with this integration. Basically, all units compatible with the **_Dantherm Residential_** or **_Pluggit iFlow_** apps should work with the integration as well.
 
-A user has reported that the integration also works with the **Bosch Vent 5000 C** ventilation unit.
+Users have reported that the integration also works with the **Bosch Vent 5000 C** and **Fränkische Profi-Air Flex** ventilation units.
 <!-- END:shared-section -->
 
 > [!NOTE]  
@@ -65,6 +65,11 @@ Thanks to _Smartzeug_
 |------------------|--------------------------|
 | `bypass_damper`  | Indicates and controls the manual bypass state of the bypass damper [[1]](#entity-notes) |
 
+#### Fan Entity
+| Entity           | Description              |
+|------------------|--------------------------|
+| `ventilation`    | Indicates and controls the operation and fan level of the ventilation unit |
+
 #### Number Entities
 
 | Entity                              | Description                        |
@@ -80,6 +85,9 @@ Thanks to _Smartzeug_
 | `humidity_setpoint_summer`          | Humidity setpoint in % (summer) [[2][5]](#entity-notes) |
 | `home_mode_timeout`                 | Sets how long Home Mode should remain active after being triggered [[3]](#entity-notes) |
 | `manual_bypass_duration`            | Duration for which manual bypass remains active after user activation [[1][2][5]](#entity-notes) |
+| `air_quality_low_threshold`         |  Set the low threshold for air quality sensitivity [[1][2]](#entity-notes) |
+| `air_quality_middle_threshold`      |  Set the middle threshold for air quality sensitivity [[1][2]](#entity-notes) |
+| `air_quality_high_threshold`        |  Set the high threshold for air quality sensitivity [[1][2]](#entity-notes) |
 
 #### Select Entities
 
