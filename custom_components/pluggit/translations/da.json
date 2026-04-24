@@ -1,6 +1,14 @@
 {
   "config": {
     "step": {
+      "manufacturer": {
+        "title": "Vælg Producent",
+        "description": "Vælg producenten af din ventilationsenhed.",
+        "data": {
+          "manufacturer": "Producent",
+          "use_discovery": "Anvend automatisk enhedsopdagelse"
+        }
+      },
       "user": {
         "title": "Pluggit Configuration",
         "description": "Konfigurer enhedens forbindelsesindstillinger.",

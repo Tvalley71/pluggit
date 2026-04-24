@@ -1,6 +1,14 @@
 {
   "config": {
     "step": {
+      "manufacturer": {
+        "title": "Select Manufacturer",
+        "description": "Choose the manufacturer of your ventilation unit.",
+        "data": {
+          "manufacturer": "Manufacturer",
+          "use_discovery": "Use automatic device discovery"
+        }
+      },
       "user": {
         "title": "Pluggit Configuration",
         "description": "Configure device connection settings.",
