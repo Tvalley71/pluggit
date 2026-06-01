@@ -1,0 +1,89 @@
+name: Sync from Dantherm
+
+on:
+  workflow_dispatch:
+    inputs:
+      dantherm_branch:
+        description: "Branch to pull from dantherm"
+        required: false
+        default: "main"
+      target_branch:
+        description: "Target branch to push changes to in pluggit"
+        required: false
+        default: "main"
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout pluggit repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.target_branch }}
+
+      - name: 📥 Checkout Dantherm repository
+        run: |
+          git clone --depth=1 --branch "${{ github.event.inputs.dantherm_branch }}" https://github.com/Tvalley71/dantherm.git dantherm
+
+      - name: 📋 Copy shared code files (excluding pluggit-owned)
+        run: |
+          rsync -av --exclude 'const.py' --exclude 'manifest.json' \
+            dantherm/custom_components/dantherm/ \
+            custom_components/pluggit/
+
+      - name: 🔧 Replace integration name
+        run: |
+          sed -i -E 's/integration:\s*dantherm/integration: pluggit/g' custom_components/pluggit/services.yaml || echo "No replacement needed"
+
+      - name: 📝 Replace translation branding
+        run: |
+          if ls custom_components/pluggit/translations/*.json 1> /dev/null 2>&1; then
+            for file in custom_components/pluggit/translations/*.json; do
+              sed -i \
+                -e 's/DANTHERM/PLUGGIT/g' \
+                -e 's/Dantherm/Pluggit/g' \
+                -e 's/dantherm/pluggit/g' "$file"
+            done
+          fi
+
+      - name: 🧾 Sync README shared sections from Dantherm
+        run: python3 sync_readme_md.py
+
+      - name: 🏷️ Write sync metadata
+        run: |
+          mkdir -p .github/sync-state
+          dantherm_sha=$(git -C dantherm rev-parse HEAD)
+
+          cat > .github/sync-state/dantherm-sync.json <<EOF
+          {
+            "source_repo": "Tvalley71/dantherm",
+            "source_branch": "${{ github.event.inputs.dantherm_branch }}",
+            "source_sha": "${dantherm_sha}",
+            "target_branch": "${{ github.event.inputs.target_branch }}"
+          }
+          EOF
+
+      - name: ✅ Commit and push if any files changed
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add custom_components/pluggit || true
+          git add README.md || true
+          git add .github/sync-state/dantherm-sync.json || true
+
+          echo "Changed files:"
+          git status --short
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git commit -m "🔄 Sync shared code and README from Dantherm"
+          git fetch origin "${{ github.event.inputs.target_branch }}"
+          git push origin HEAD:${{ github.event.inputs.target_branch }}
