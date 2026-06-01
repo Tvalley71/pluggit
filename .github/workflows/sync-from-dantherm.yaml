@@ -85,5 +85,4 @@ jobs:
           fi
 
           git commit -m "🔄 Sync shared code and README from Dantherm"
-          git fetch origin "${{ github.event.inputs.target_branch }}"
           git push origin HEAD:${{ github.event.inputs.target_branch }}
