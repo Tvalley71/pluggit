@@ -15,7 +15,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 
 from .adaptive_manager import DanthermAdaptiveManager
-from .const import DEVICE_TYPES
+from .const import DEFAULT_NAME, DEVICE_TYPES
 from .coordinator import DanthermCoordinator
 from .device_map import (
     ATTR_AIR_QUALITY,
@@ -34,6 +34,8 @@ from .device_map import (
     CONF_DISABLE_TEMPERATURE_UNKNOWN,
     CONF_ECO_MODE_TRIGGER,
     CONF_HOME_MODE_TRIGGER,
+    CONF_MANUFACTURER,
+    MANUFACTURER_MAP,
     STATE_AUTOMATIC,
     STATE_AWAY,
     STATE_FIREPLACE,
@@ -48,6 +50,7 @@ from .device_map import (
     STATE_STANDBY,
     STATE_SUMMER,
     STATE_WEEKPROGRAM,
+    USE_MANUFACTURER_MAP,
     ActiveUnitMode,
     BypassDamperState,
     ComponentClass,
@@ -57,6 +60,9 @@ from .device_map import (
 from .modbus import (
     MODBUS_REGISTER_ACTIVE_MODE,
     MODBUS_REGISTER_AIR_QUALITY,
+    MODBUS_REGISTER_AIR_QUALITY_HIGH_THRESHOLD,
+    MODBUS_REGISTER_AIR_QUALITY_LOW_THRESHOLD,
+    MODBUS_REGISTER_AIR_QUALITY_MIDDLE_THRESHOLD,
     MODBUS_REGISTER_ALARM,
     MODBUS_REGISTER_ALARM_RESET,
     MODBUS_REGISTER_BYPASS_DAMPER,
@@ -455,10 +461,26 @@ class DanthermDevice(DanthermModbus, DanthermAdaptiveManager):
         return self._device_name
 
     @property
+    def get_device_manufacturer(self) -> str:
+        """Device manufacturer."""
+
+        return (
+            self._config_entry.data.get(CONF_MANUFACTURER, DEFAULT_NAME)
+            if self._config_entry
+            else DEFAULT_NAME
+        )
+
+    @property
     def get_device_type(self) -> str:
         """Device type."""
 
-        device_type = DEVICE_TYPES.get(self._device_type, None)
+        if USE_MANUFACTURER_MAP:
+            manufacturer = self.get_device_manufacturer
+            device_list = MANUFACTURER_MAP.get(manufacturer, {})
+        else:
+            device_list = DEVICE_TYPES
+
+        device_type = device_list.get(self._device_type, None)
         if device_type is None:
             device_type = f"UNKNOWN {self._device_type}"
         device_mode = None
@@ -482,6 +504,13 @@ class DanthermDevice(DanthermModbus, DanthermAdaptiveManager):
     def get_device_serial_number(self) -> int:
         """Device serial number."""
         return self._device_serial_number
+
+    @property
+    def get_actions_pending(self) -> bool:
+        """Return True when the device has at least one pending action."""
+        if self.coordinator is None:
+            return False
+        return self.coordinator.has_pending_actions()
 
     @property
     def get_current_unit_mode(self) -> Any:
@@ -1312,6 +1341,30 @@ class DanthermDevice(DanthermModbus, DanthermAdaptiveManager):
             MODBUS_REGISTER_HUMIDITY_SETPOINT_SUMMER, value
         )
 
+    async def set_air_quality_low_threshold(self, value: int) -> None:
+        """Set air quality low threshold."""
+
+        # Write the threshold to the air quality low threshold register
+        await self._write_holding_uint32(
+            MODBUS_REGISTER_AIR_QUALITY_LOW_THRESHOLD, value
+        )
+
+    async def set_air_quality_middle_threshold(self, value: int) -> None:
+        """Set air quality middle threshold."""
+
+        # Write the threshold to the air quality middle threshold register
+        await self._write_holding_uint32(
+            MODBUS_REGISTER_AIR_QUALITY_MIDDLE_THRESHOLD, value
+        )
+
+    async def set_air_quality_high_threshold(self, value: int) -> None:
+        """Set air quality high threshold."""
+
+        # Write the threshold to the air quality high threshold register
+        await self._write_holding_uint32(
+            MODBUS_REGISTER_AIR_QUALITY_HIGH_THRESHOLD, value
+        )
+
     async def set_night_mode_start_time(self, value: str) -> None:
         """Set night mode start time."""
 
@@ -1519,6 +1572,33 @@ class DanthermDevice(DanthermModbus, DanthermAdaptiveManager):
 
         _LOGGER.debug("Air Quality Level = %s", level)
         return str(level)
+
+    async def async_get_air_quality_low_threshold(self) -> int | None:
+        """Get air quality low threshold."""
+
+        result = await self._read_holding_uint32(
+            MODBUS_REGISTER_AIR_QUALITY_LOW_THRESHOLD
+        )
+        _LOGGER.debug("Air quality low threshold = %s", result)
+        return result
+
+    async def async_get_air_quality_middle_threshold(self) -> int | None:
+        """Get air quality middle threshold."""
+
+        result = await self._read_holding_uint32(
+            MODBUS_REGISTER_AIR_QUALITY_MIDDLE_THRESHOLD
+        )
+        _LOGGER.debug("Air quality middle threshold = %s", result)
+        return result
+
+    async def async_get_air_quality_high_threshold(self) -> int | None:
+        """Get air quality high threshold."""
+
+        result = await self._read_holding_uint32(
+            MODBUS_REGISTER_AIR_QUALITY_HIGH_THRESHOLD
+        )
+        _LOGGER.debug("Air quality high threshold = %s", result)
+        return result
 
     async def async_get_exhaust_temperature(self) -> float | None:
         """Get exhaust temperature."""

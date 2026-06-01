@@ -26,21 +26,16 @@ from .device_map import (
     CONF_ECO_MODE_TRIGGER,
     CONF_HOME_MODE_TRIGGER,
     CONF_LINK_TO_PRIMARY_CALENDAR,
+    CONF_MANUFACTURER,
     CONF_POLLING_SPEED,
+    CONF_USE_DISCOVERY,
+    MANUFACTURER_MAP,
     POLLING_OPTIONS,
     POLLING_OPTIONS_LIST,
+    USE_MANUFACTURER_MAP,
 )
+from .discovery import async_discover
 from .helpers import is_primary_entry
-
-DATA_SCHEMA = vol.Schema(
-    {
-        vol.Required(CONF_NAME, default=DEFAULT_NAME): str,
-        vol.Required(CONF_HOST): str,
-        vol.Required(CONF_PORT, default=DEFAULT_PORT): vol.All(
-            vol.Coerce(int), vol.Range(min=1, max=65535)
-        ),
-    }
-)
 
 # URL constants for description placeholders
 BUYMEACOFFEE_URL = "https://www.buymeacoffee.com/tvalley71"
@@ -56,6 +51,46 @@ GITHUB_URL = "https://github.com/Tvalley71/dantherm"
 IS_DEBUG = os.getenv("DANTHERM_DEBUG") == "1"
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def _get_manufacturer_schema() -> vol.Schema:
+    """Return the schema for the manufacturer selection step."""
+
+    manufacturers = sorted(MANUFACTURER_MAP.keys())  # Sort manufacturers alphabetically
+    return vol.Schema(
+        {
+            vol.Required(CONF_MANUFACTURER, default=DEFAULT_NAME): vol.In(
+                manufacturers
+            ),
+        }
+    )
+
+
+def _get_discovery_schema() -> vol.Schema:
+    """Return the schema for the discovery selection step."""
+
+    return vol.Schema(
+        {
+            vol.Optional(CONF_USE_DISCOVERY, default=False): bool,
+        }
+    )
+
+
+def _get_user_schema(
+    default_name: str = DEFAULT_NAME,
+    default_host: str = "",
+) -> vol.Schema:
+    """Return the schema for the user step."""
+
+    return vol.Schema(
+        {
+            vol.Required(CONF_NAME, default=default_name): str,
+            vol.Required(CONF_HOST, default=default_host): str,
+            vol.Required(CONF_PORT, default=DEFAULT_PORT): vol.All(
+                vol.Coerce(int), vol.Range(min=1, max=65535)
+            ),
+        }
+    )
 
 
 def host_valid(host: str) -> bool:
@@ -83,17 +118,100 @@ class DanthermConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 3  # Current version of the config flow
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
 
+    def __init__(self) -> None:
+        """Initialize the config flow."""
+        self._manufacturer: str | None = None
+        self._use_discovery: bool = (
+            False  # Default to False; set in the discovery_option step
+        )
+        self._discovery_configured: bool = False
+
     def _host_in_configuration_exists(self, host: str) -> bool:
         """Return True if host exists in configuration."""
         if IS_DEBUG:
             return False  # Allow duplicates in debug mode
         return host in dantherm_modbus_entries(self.hass)
 
+    async def async_step_manufacturer(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Handle the manufacturer selection step."""
+        if user_input is not None:
+            self._manufacturer = user_input[CONF_MANUFACTURER]
+            return await self.async_step_discovery_option()
+
+        return self.async_show_form(
+            step_id=CONF_MANUFACTURER,
+            data_schema=_get_manufacturer_schema(),
+        )
+
+    async def async_step_discovery_option(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Handle the discovery selection step before continuing to user setup."""
+        if user_input is not None:
+            self._use_discovery = user_input.get(CONF_USE_DISCOVERY, False)
+            self._discovery_configured = True
+            return await self.async_step_user()
+
+        return self.async_show_form(
+            step_id="discovery_option",
+            data_schema=_get_discovery_schema(),
+        )
+
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         """Handle the initial step."""
         errors = {}
+
+        if USE_MANUFACTURER_MAP and self._manufacturer is None:
+            return await self.async_step_manufacturer()
+
+        if not self._discovery_configured:
+            return await self.async_step_discovery_option()
+
+        if user_input is None:
+            default_name = DEFAULT_NAME
+            default_host = ""
+
+            # Discover devices on the network only if discovery is used and enabled by the user
+            if self._use_discovery:
+                discovered = await async_discover(self.hass)
+                _LOGGER.debug("Discovered devices: %s", discovered)
+
+                if discovered:
+                    configured_hosts = dantherm_modbus_entries(self.hass)
+
+                    available_devices = [
+                        d
+                        for d in discovered
+                        if (ip := d.get("ip")) and ip not in configured_hosts
+                    ]
+
+                    # If there are available devices, pre-fill the form with the
+                    # first one
+                    if available_devices:
+                        first_device = available_devices[0]
+
+                        default_host = first_device["ip"]
+                        default_name = first_device.get("name") or (
+                            self._manufacturer.title()
+                            if self._manufacturer
+                            else DEFAULT_NAME
+                        )
+
+                        _LOGGER.debug("Default host from discovery: %s", default_host)
+                        _LOGGER.debug("Default name from discovery: %s", default_name)
+
+            return self.async_show_form(
+                step_id="user",
+                data_schema=_get_user_schema(
+                    default_name=default_name,
+                    default_host=default_host,
+                ),
+                errors=errors,
+            )
 
         if user_input is not None:
             host = user_input[CONF_HOST]
@@ -135,6 +253,7 @@ class DanthermConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 if not errors:
                     # Create config entry data with numeric scan_interval
                     data = {
+                        CONF_MANUFACTURER: getattr(self, "_manufacturer", None),
                         CONF_NAME: name,
                         CONF_HOST: host,
                         CONF_PORT: port,
@@ -142,25 +261,34 @@ class DanthermConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     }
 
                     return self.async_create_entry(title=name, data=data)
+
         # Show the form on initial load or when there are errors
+        default_name = (
+            self._manufacturer.title()
+            if self._manufacturer is not None
+            else DEFAULT_NAME
+        )
+        data_schema = _get_user_schema(default_name=default_name)
         return self.async_show_form(
-            step_id="user", data_schema=DATA_SCHEMA, errors=errors
+            step_id="user", data_schema=data_schema, errors=errors
         )
 
     @staticmethod
     @callback
     def async_get_options_flow(
         config_entry: config_entries.ConfigEntry,
-    ) -> "DanthermOptionsFlowHandler":
+    ) -> DanthermOptionsFlowHandler:
         """Create the options flow."""
         return DanthermOptionsFlowHandler(config_entry)
 
 
-class DanthermOptionsFlowHandler(config_entries.OptionsFlow):
+class DanthermOptionsFlowHandler(config_entries.OptionsFlowWithReload):
     """Handle Dantherm options."""
 
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         """Initialize options flow."""
+        self._pending_options: dict[str, Any] = dict(config_entry.options)
+        self._network_data_changed = False
 
     def _get_polling_speed_from_interval(self, interval: int) -> str:
         """Convert scan interval to polling speed option."""
@@ -272,6 +400,7 @@ class DanthermOptionsFlowHandler(config_entries.OptionsFlow):
                     # Keep existing custom interval (preserve current value)
                     new_data[CONF_SCAN_INTERVAL] = current_scan_interval
 
+                self._network_data_changed = new_data != self.config_entry.data
                 self.hass.config_entries.async_update_entry(
                     self.config_entry,
                     data=new_data,
@@ -288,18 +417,24 @@ class DanthermOptionsFlowHandler(config_entries.OptionsFlow):
     ) -> ConfigFlowResult:
         """Configure adaptive mode triggers and calendar linking."""
         errors: dict[str, str] = {}
-        options = dict(self.config_entry.options)
+        options = dict(self._pending_options)
 
         schema_dict: dict[vol.Optional, Any] = {
             vol.Optional(
                 CONF_BOOST_MODE_TRIGGER,
-                default=options.get(CONF_BOOST_MODE_TRIGGER, ""),
+                description={
+                    "suggested_value": options.get(CONF_BOOST_MODE_TRIGGER, "")
+                },
             ): str,
             vol.Optional(
-                CONF_ECO_MODE_TRIGGER, default=options.get(CONF_ECO_MODE_TRIGGER, "")
+                CONF_ECO_MODE_TRIGGER,
+                description={"suggested_value": options.get(CONF_ECO_MODE_TRIGGER, "")},
             ): str,
             vol.Optional(
-                CONF_HOME_MODE_TRIGGER, default=options.get(CONF_HOME_MODE_TRIGGER, "")
+                CONF_HOME_MODE_TRIGGER,
+                description={
+                    "suggested_value": options.get(CONF_HOME_MODE_TRIGGER, "")
+                },
             ): str,
         }
 
@@ -337,11 +472,17 @@ class DanthermOptionsFlowHandler(config_entries.OptionsFlow):
                         errors[entity_key] = "invalid_entity"
 
             if not errors:
-                # Update options
-                self.hass.config_entries.async_update_entry(
-                    self.config_entry,
-                    options={**options, **user_input},
-                )
+                new_options = {**options, **user_input}
+
+                # Optional checkbox fields can be omitted when unchecked.
+                # Persist explicit booleans to avoid stale True values.
+                if not is_primary_entry(self.hass, self.config_entry.entry_id):
+                    new_options[CONF_LINK_TO_PRIMARY_CALENDAR] = bool(
+                        user_input.get(CONF_LINK_TO_PRIMARY_CALENDAR, False)
+                    )
+
+                # Keep in-memory until final step submits all options at once.
+                self._pending_options = new_options
                 # Go to next step
                 return await self.async_step_advanced()
 
@@ -353,7 +494,7 @@ class DanthermOptionsFlowHandler(config_entries.OptionsFlow):
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         """Configure advanced options."""
-        options = dict(self.config_entry.options)
+        options = dict(self._pending_options)
 
         schema = vol.Schema(
             {
@@ -369,13 +510,23 @@ class DanthermOptionsFlowHandler(config_entries.OptionsFlow):
         )
 
         if user_input is not None:
-            # Update options and reload
-            self.hass.config_entries.async_update_entry(
-                self.config_entry,
-                options={**options, **user_input},
+            new_options = {**options, **user_input}
+
+            # Optional checkbox fields can be omitted when unchecked.
+            # Persist explicit booleans to avoid stale True values.
+            new_options[CONF_DISABLE_TEMPERATURE_UNKNOWN] = bool(
+                user_input.get(CONF_DISABLE_TEMPERATURE_UNKNOWN, False)
             )
-            # Reload this entry so settings apply
-            await self.hass.config_entries.async_reload(self.config_entry.entry_id)
-            return self.async_create_entry(title="", data={})
+            new_options[CONF_DISABLE_NOTIFICATIONS] = bool(
+                user_input.get(CONF_DISABLE_NOTIFICATIONS, False)
+            )
+
+            if self._network_data_changed and new_options == self.config_entry.options:
+                self.hass.config_entries.async_schedule_reload(
+                    self.config_entry.entry_id
+                )
+
+            # Return options so HA persists atomically and auto-reloads entry.
+            return self.async_create_entry(title="", data=new_options)
 
         return self.async_show_form(step_id="advanced", data_schema=schema)

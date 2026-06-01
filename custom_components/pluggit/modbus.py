@@ -20,6 +20,9 @@ MODBUS_REGISTER_AB_SWITCH_POSITION_HAL_LEFT = 84
 MODBUS_REGISTER_AB_SWITCH_POSITION_HAL_RIGHT = 86
 MODBUS_REGISTER_ACTIVE_MODE = 168
 MODBUS_REGISTER_AIR_QUALITY = 430
+MODBUS_REGISTER_AIR_QUALITY_LOW_THRESHOLD = 562
+MODBUS_REGISTER_AIR_QUALITY_MIDDLE_THRESHOLD = 564
+MODBUS_REGISTER_AIR_QUALITY_HIGH_THRESHOLD = 566
 MODBUS_REGISTER_ALARM = 516
 MODBUS_REGISTER_ALARM_RESET = 514
 MODBUS_REGISTER_BYPASS_DAMPER = 198
@@ -235,7 +238,7 @@ class DanthermModbus:
                 return
             if address is not None:
                 if self.coordinator is not None:
-                    self.coordinator.enqueue_backend(
+                    await self.coordinator.enqueue_backend(
                         self.__write_holding_registers, address, [value]
                     )
                 else:
@@ -344,7 +347,7 @@ class DanthermModbus:
             int(value), self._client.DATATYPE.UINT32, "little"
         )
         if self.coordinator is not None:
-            self.coordinator.enqueue_backend(
+            await self.coordinator.enqueue_backend(
                 self.__write_holding_registers, address, payload
             )
         else:
@@ -387,7 +390,7 @@ class DanthermModbus:
             value, self._client.DATATYPE.FLOAT32, "little"
         )
         if self.coordinator is not None:
-            self.coordinator.enqueue_backend(
+            await self.coordinator.enqueue_backend(
                 self.__write_holding_registers, address, payload
             )
         else:

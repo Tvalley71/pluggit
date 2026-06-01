@@ -12,6 +12,9 @@ from homeassistant.helpers.template import Template
 
 from .const import DOMAIN
 from .device_map import (
+    ATTR_AIR_QUALITY_HIGH_THRESHOLD,
+    ATTR_AIR_QUALITY_LOW_THRESHOLD,
+    ATTR_AIR_QUALITY_MIDDLE_THRESHOLD,
     ATTR_AWAY_MODE,
     ATTR_BYPASS_MAXIMUM_TEMPERATURE,
     ATTR_BYPASS_MAXIMUM_TEMPERATURE_SUMMER,
@@ -44,9 +47,13 @@ from .device_map import (
     SERVICE_SET_CONFIGURATION_3,
     SERVICE_SET_STATE,
     WEEK_PROGRAM_SELECTIONS,
-    ActiveUnitMode,
+    ComponentClass,
 )
-from .exceptions import InvalidTimeFormat, UnsupportedByFirmware
+from .exceptions import (
+    AirQualitySensorNotAvailable,
+    InvalidTimeFormat,
+    UnsupportedByFirmware,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -73,6 +80,15 @@ DANTHERM_SET_CONFIGURATION_SCHEMA = vol.Schema(
         vol.Optional(ATTR_NIGHT_MODE_START_TIME): cv.string,
         vol.Optional(ATTR_NIGHT_MODE_END_TIME): cv.string,
         vol.Optional(ATTR_WEEK_PROGRAM_SELECTION): vol.In(WEEK_PROGRAM_SELECTIONS),
+        vol.Optional(ATTR_AIR_QUALITY_LOW_THRESHOLD): vol.All(
+            vol.Coerce(int), vol.Range(min=0, max=65535)
+        ),
+        vol.Optional(ATTR_AIR_QUALITY_MIDDLE_THRESHOLD): vol.All(
+            vol.Coerce(int), vol.Range(min=0, max=65535)
+        ),
+        vol.Optional(ATTR_AIR_QUALITY_HIGH_THRESHOLD): vol.All(
+            vol.Coerce(int), vol.Range(min=0, max=65535)
+        ),
     }
 )
 
@@ -180,58 +196,41 @@ async def async_setup_services(hass: HomeAssistant) -> None:  # noqa: C901
         async def apply_state(device: Any, call: ServiceCall) -> None:
             """Apply state."""
 
-            # Apply away mode, summer mode, operation selectio, fan level selection,
-            # fireplace mode, disable bypass and manual bypass mode
+            # Apply away mode, summer mode, operation selection, fan level selection,
+            # fireplace mode and manual bypass mode
             if ATTR_AWAY_MODE in call.data:
-                away_mode = (
-                    ActiveUnitMode.StartAway
-                    if bool(render_template(call.data[ATTR_AWAY_MODE]))
-                    else ActiveUnitMode.EndAway
-                )
-                device.coordinator.enqueue_frontend(
-                    device.set_active_unit_mode, away_mode
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_AWAY_MODE, bool(render_template(call.data[ATTR_AWAY_MODE]))
                 )
 
             if ATTR_SUMMER_MODE in call.data:
-                summer_mode = (
-                    ActiveUnitMode.StartSummer
-                    if bool(render_template(call.data[ATTR_SUMMER_MODE]))
-                    else ActiveUnitMode.EndSummer
-                )
-                device.coordinator.enqueue_frontend(
-                    device.set_active_unit_mode, summer_mode
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_SUMMER_MODE,
+                    bool(render_template(call.data[ATTR_SUMMER_MODE])),
                 )
 
             if ATTR_OPERATION_SELECTION in call.data:
-                operation_selection = render_template(
-                    call.data[ATTR_OPERATION_SELECTION]
-                )
-                device.coordinator.enqueue_frontend(
-                    device.set_operation_selection, operation_selection
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_OPERATION_SELECTION,
+                    render_template(call.data[ATTR_OPERATION_SELECTION]),
                 )
 
             if ATTR_FAN_LEVEL_SELECTION in call.data:
-                fan_level = render_template(call.data[ATTR_FAN_LEVEL_SELECTION])
-                device.coordinator.enqueue_frontend(device.set_fan_level, fan_level)
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_FAN_LEVEL_SELECTION,
+                    render_template(call.data[ATTR_FAN_LEVEL_SELECTION]),
+                )
 
             if ATTR_FIREPLACE_MODE in call.data:
-                fireplace_mode = (
-                    ActiveUnitMode.StartFireplace
-                    if bool(render_template(call.data[ATTR_FIREPLACE_MODE]))
-                    else ActiveUnitMode.EndFireplace
-                )
-                device.coordinator.enqueue_frontend(
-                    device.set_active_unit_mode, fireplace_mode
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_FIREPLACE_MODE,
+                    bool(render_template(call.data[ATTR_FIREPLACE_MODE])),
                 )
 
             if ATTR_MANUAL_BYPASS_MODE in call.data:
-                bypass_mode = (
-                    ActiveUnitMode.SelectManualBypass
-                    if bool(render_template(call.data[ATTR_MANUAL_BYPASS_MODE]))
-                    else ActiveUnitMode.DeselectManualBypass
-                )
-                device.coordinator.enqueue_frontend(
-                    device.set_active_unit_mode, bypass_mode
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_MANUAL_BYPASS_MODE,
+                    bool(render_template(call.data[ATTR_MANUAL_BYPASS_MODE])),
                 )
 
         await async_apply_device_function(call, apply_state)
@@ -245,41 +244,63 @@ async def async_setup_services(hass: HomeAssistant) -> None:  # noqa: C901
             # Apply filter lifetime, night mode, night mode start and end time,
             # and week program selection
             if ATTR_FILTER_LIFETIME in call.data:
-                filter_lifetime = int(render_template(call.data[ATTR_FILTER_LIFETIME]))
-                device.coordinator.enqueue_frontend(
-                    device.set_filter_lifetime, filter_lifetime
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_FILTER_LIFETIME,
+                    int(render_template(call.data[ATTR_FILTER_LIFETIME])),
                 )
 
             if ATTR_NIGHT_MODE in call.data:
-                night_mode = (
-                    ActiveUnitMode.NightEnable
-                    if bool(render_template(call.data[ATTR_NIGHT_MODE]))
-                    else ActiveUnitMode.NightDisable
-                )
-                device.coordinator.enqueue_frontend(
-                    device.set_active_unit_mode, night_mode
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_NIGHT_MODE,
+                    bool(render_template(call.data[ATTR_NIGHT_MODE])),
                 )
 
             if ATTR_NIGHT_MODE_START_TIME in call.data:
                 start_time = render_template(call.data[ATTR_NIGHT_MODE_START_TIME])
                 validate_time_format(start_time)
-                device.coordinator.enqueue_frontend(
-                    device.set_night_mode_start_time, start_time
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_NIGHT_MODE_START_TIME, start_time
                 )
 
             if ATTR_NIGHT_MODE_END_TIME in call.data:
                 end_time = render_template(call.data[ATTR_NIGHT_MODE_END_TIME])
                 validate_time_format(end_time)
-                device.coordinator.enqueue_frontend(
-                    device.set_night_mode_end_time, end_time
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_NIGHT_MODE_END_TIME, end_time
                 )
 
             if ATTR_WEEK_PROGRAM_SELECTION in call.data:
-                week_program_selection = render_template(
-                    call.data[ATTR_WEEK_PROGRAM_SELECTION]
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_WEEK_PROGRAM_SELECTION,
+                    render_template(call.data[ATTR_WEEK_PROGRAM_SELECTION]),
                 )
-                device.coordinator.enqueue_frontend(
-                    device.set_week_program_selection, week_program_selection
+
+            # Check if VOC sensor is available before setting air quality thresholds
+            air_quality_thresholds_present = (
+                ATTR_AIR_QUALITY_LOW_THRESHOLD in call.data
+                or ATTR_AIR_QUALITY_MIDDLE_THRESHOLD in call.data
+                or ATTR_AIR_QUALITY_HIGH_THRESHOLD in call.data
+            )
+            if air_quality_thresholds_present:
+                if (device.installed_components & ComponentClass.VOC_sensor) == 0:
+                    raise AirQualitySensorNotAvailable
+
+            if ATTR_AIR_QUALITY_LOW_THRESHOLD in call.data:
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_AIR_QUALITY_LOW_THRESHOLD,
+                    int(render_template(call.data[ATTR_AIR_QUALITY_LOW_THRESHOLD])),
+                )
+
+            if ATTR_AIR_QUALITY_MIDDLE_THRESHOLD in call.data:
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_AIR_QUALITY_MIDDLE_THRESHOLD,
+                    int(render_template(call.data[ATTR_AIR_QUALITY_MIDDLE_THRESHOLD])),
+                )
+
+            if ATTR_AIR_QUALITY_HIGH_THRESHOLD in call.data:
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_AIR_QUALITY_HIGH_THRESHOLD,
+                    int(render_template(call.data[ATTR_AIR_QUALITY_HIGH_THRESHOLD])),
                 )
 
         await async_apply_device_function(call, apply_config)
@@ -299,41 +320,33 @@ async def async_setup_services(hass: HomeAssistant) -> None:  # noqa: C901
 
             # Apply bypass minimum and maximum temperature, manual bypass duration
             if ATTR_BYPASS_MINIMUM_TEMPERATURE in call.data:
-                bypass_minimum_temperature = float(
-                    render_template(call.data[ATTR_BYPASS_MINIMUM_TEMPERATURE])
-                )
-                device.coordinator.enqueue_frontend(
-                    device.set_bypass_minimum_temperature, bypass_minimum_temperature
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_BYPASS_MINIMUM_TEMPERATURE,
+                    float(render_template(call.data[ATTR_BYPASS_MINIMUM_TEMPERATURE])),
                 )
 
             if ATTR_BYPASS_MAXIMUM_TEMPERATURE in call.data:
-                bypass_maximum_temperature = float(
-                    render_template(call.data[ATTR_BYPASS_MAXIMUM_TEMPERATURE])
-                )
-                device.coordinator.enqueue_frontend(
-                    device.set_bypass_maximum_temperature, bypass_maximum_temperature
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_BYPASS_MAXIMUM_TEMPERATURE,
+                    float(render_template(call.data[ATTR_BYPASS_MAXIMUM_TEMPERATURE])),
                 )
 
             if ATTR_HUMIDITY_SETPOINT in call.data:
-                humidity_setpoint = float(
-                    render_template(call.data[ATTR_HUMIDITY_SETPOINT])
-                )
-                device.coordinator.enqueue_frontend(
-                    device.set_humidity_setpoint, humidity_setpoint
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_HUMIDITY_SETPOINT,
+                    float(render_template(call.data[ATTR_HUMIDITY_SETPOINT])),
                 )
 
             if ATTR_MANUAL_BYPASS_DURATION in call.data:
-                bypass_duration = int(
-                    render_template(call.data[ATTR_MANUAL_BYPASS_DURATION])
-                )
-                device.coordinator.enqueue_frontend(
-                    device.set_manual_bypass_duration, bypass_duration
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_MANUAL_BYPASS_DURATION,
+                    int(render_template(call.data[ATTR_MANUAL_BYPASS_DURATION])),
                 )
 
             if ATTR_DISABLE_BYPASS in call.data:
-                disable_bypass = bool(render_template(call.data[ATTR_DISABLE_BYPASS]))
-                device.coordinator.enqueue_frontend(
-                    device.set_disable_bypass, disable_bypass
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_DISABLE_BYPASS,
+                    bool(render_template(call.data[ATTR_DISABLE_BYPASS])),
                 )
 
         await async_apply_device_function(call, apply_config_2)
@@ -351,31 +364,31 @@ async def async_setup_services(hass: HomeAssistant) -> None:  # noqa: C901
             if firmware_version < REQUIRED_FIRMWARE_3:
                 raise UnsupportedByFirmware
 
-            # Apply bypass minimum and maximum temperature, manual bypass duration
+            # Apply bypass minimum and maximum temperature summer, humidity setpoint summer
             if ATTR_BYPASS_MINIMUM_TEMPERATURE_SUMMER in call.data:
-                bypass_minimum_temperature_summer = float(
-                    render_template(call.data[ATTR_BYPASS_MINIMUM_TEMPERATURE_SUMMER])
-                )
-                device.coordinator.enqueue_frontend(
-                    device.set_bypass_minimum_temperature_summer,
-                    bypass_minimum_temperature_summer,
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_BYPASS_MINIMUM_TEMPERATURE_SUMMER,
+                    float(
+                        render_template(
+                            call.data[ATTR_BYPASS_MINIMUM_TEMPERATURE_SUMMER]
+                        )
+                    ),
                 )
 
             if ATTR_BYPASS_MAXIMUM_TEMPERATURE_SUMMER in call.data:
-                bypass_maximum_temperature_summer = float(
-                    render_template(call.data[ATTR_BYPASS_MAXIMUM_TEMPERATURE_SUMMER])
-                )
-                device.coordinator.enqueue_frontend(
-                    device.set_bypass_maximum_temperature_summer,
-                    bypass_maximum_temperature_summer,
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_BYPASS_MAXIMUM_TEMPERATURE_SUMMER,
+                    float(
+                        render_template(
+                            call.data[ATTR_BYPASS_MAXIMUM_TEMPERATURE_SUMMER]
+                        )
+                    ),
                 )
 
             if ATTR_HUMIDITY_SETPOINT_SUMMER in call.data:
-                humidity_setpoint_summer = float(
-                    render_template(call.data[ATTR_HUMIDITY_SETPOINT_SUMMER])
-                )
-                device.coordinator.enqueue_frontend(
-                    device.set_humidity_setpoint_summer, humidity_setpoint_summer
+                await device.coordinator.async_set_entity_state_by_key(
+                    ATTR_HUMIDITY_SETPOINT_SUMMER,
+                    float(render_template(call.data[ATTR_HUMIDITY_SETPOINT_SUMMER])),
                 )
 
         await async_apply_device_function(call, apply_config_3)

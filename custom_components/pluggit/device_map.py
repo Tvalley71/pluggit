@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from typing import Any, Final
 
+from homeassistant.components.binary_sensor import BinarySensorEntityDescription
 from homeassistant.components.button import ButtonEntityDescription
 from homeassistant.components.calendar import CalendarEntityDescription
 from homeassistant.components.cover import (
@@ -27,6 +28,7 @@ from homeassistant.components.text import TextEntityDescription, TextMode
 from homeassistant.const import EntityCategory
 from homeassistant.helpers.entity import EntityDescription
 
+from .const import DOMAIN
 from .modbus import (
     MODBUS_REGISTER_FAN1_SPEED,
     MODBUS_REGISTER_FAN2_SPEED,
@@ -45,12 +47,54 @@ SCAN_INTERVAL_FAST = 10  # Fast polling - legacy default, good for real-time mon
 SCAN_INTERVAL_NORMAL = 30  # Normal polling - current default for new installations
 SCAN_INTERVAL_SLOW = 60  # Slow polling - conserves bandwidth
 
+# Minimum milliseconds that must pass after a write is executed before pending
+# is cleared. If a read arrives before this time, clearing is deferred.
+ACTION_PENDING_MIN_READ_DELAY_MILLISECONDS = 3000
+
 # For config flow options
+CONF_MANUFACTURER: Final = "manufacturer"
+CONF_USE_DISCOVERY: Final = "use_discovery"
 CONF_POLLING_SPEED: Final = "polling_speed"
 POLLING_OPTIONS = {
     "fast": SCAN_INTERVAL_FAST,
     "normal": SCAN_INTERVAL_NORMAL,
     "slow": SCAN_INTERVAL_SLOW,
+}
+
+USE_MANUFACTURER_MAP = (
+    DOMAIN == "dantherm"
+)  # Only use manufacturer map for the dantherm domain, not for pluggit
+
+MANUFACTURER_MAP = {
+    "Bosch": {},
+    "Dantherm": {
+        1: "WG200",
+        2: "WG300",
+        3: "WG500",
+        4: "HCC 2",
+        5: "HCC 2 ALU",
+        6: "HCV300 ALU",
+        7: "HCV500 ALU",
+        8: "HCV700 ALU",
+        9: "HCV400 P2",
+        10: "HCV400 E1",
+        11: "HCV400 P1",
+        12: "HCC 2 E1",
+        14: "HCV400 P1-E1",
+        15: "HCV460 P2",
+        19: "HCV460 E1",
+        21: "RCV320 P2",
+        23: "HCH 5 MKII",
+        26: "RCV320 P1",
+        27: "RCC220 P2",
+    },
+    "Fränkische": {},
+    "Pluggit": {
+        1: "AP190",
+        2: "AP310",
+        3: "AP460",
+        4: "AD160",
+    },
 }
 
 POLLING_OPTIONS_LIST = ["fast", "normal", "slow"]
@@ -133,6 +177,9 @@ ATTR_HUMIDITY_SETPOINT_SUMMER: Final = "humidity_setpoint_summer"
 
 ATTR_AIR_QUALITY: Final = "air_quality"
 ATTR_AIR_QUALITY_LEVEL: Final = "air_quality_level"
+ATTR_AIR_QUALITY_LOW_THRESHOLD: Final = "air_quality_low_threshold"
+ATTR_AIR_QUALITY_MIDDLE_THRESHOLD: Final = "air_quality_middle_threshold"
+ATTR_AIR_QUALITY_HIGH_THRESHOLD: Final = "air_quality_high_threshold"
 
 ATTR_EXHAUST_TEMPERATURE: Final = "exhaust_temperature"
 
@@ -194,6 +241,8 @@ ATTR_INTERNAL_PREHEATER_DUTYCYCLE: Final = "internal_preheater_dutycycle"
 ATTR_FILTER_RESET: Final = "filter_reset"
 
 ATTR_ALARM_RESET: Final = "alarm_reset"
+
+ATTR_ACTIONS_PENDING: Final = "actions_pending"
 
 ATTR_FEATURES: Final = "features"
 
@@ -464,11 +513,28 @@ class DanthermSwitchEntityDescription(
 
 
 @dataclass(frozen=True)
+class DanthermBinarySensorEntityDescription(
+    DanthermEntityDescription, BinarySensorEntityDescription
+):
+    """Dantherm Binary Sensor Entity Description."""
+
+
+@dataclass(frozen=True)
 class DanthermTimeTextEntityDescription(
     DanthermEntityDescription, TextEntityDescription
 ):
     """Dantherm Time Text Entity Description."""
 
+
+BINARY_SENSORS: tuple[DanthermBinarySensorEntityDescription, ...] = (
+    DanthermBinarySensorEntityDescription(
+        key=ATTR_ACTIONS_PENDING,
+        icon="mdi:clock-alert",
+        data_getinternal=ATTR_ACTIONS_PENDING,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+    ),
+)
 
 BUTTONS: tuple[DanthermButtonEntityDescription, ...] = (
     DanthermButtonEntityDescription(
@@ -659,6 +725,51 @@ NUMBERS: tuple[DanthermNumberEntityDescription, ...] = (
         entity_registry_enabled_default=False,
         entity_category=EntityCategory.CONFIG,
         component_class=ComponentClass.Bypass,
+    ),
+    DanthermNumberEntityDescription(
+        key=ATTR_AIR_QUALITY_LOW_THRESHOLD,
+        icon="mdi:molecule",
+        data_setinternal=ATTR_AIR_QUALITY_LOW_THRESHOLD,
+        data_getinternal=ATTR_AIR_QUALITY_LOW_THRESHOLD,
+        native_max_value=65535,
+        native_min_value=0,
+        native_step=1,
+        native_unit_of_measurement="ppm",
+        mode=NumberMode.BOX,
+        entity_registry_visible_default=True,
+        entity_registry_enabled_default=False,
+        entity_category=EntityCategory.CONFIG,
+        component_class=ComponentClass.VOC_sensor,
+    ),
+    DanthermNumberEntityDescription(
+        key=ATTR_AIR_QUALITY_MIDDLE_THRESHOLD,
+        icon="mdi:molecule",
+        data_setinternal=ATTR_AIR_QUALITY_MIDDLE_THRESHOLD,
+        data_getinternal=ATTR_AIR_QUALITY_MIDDLE_THRESHOLD,
+        native_max_value=65535,
+        native_min_value=0,
+        native_step=1,
+        native_unit_of_measurement="ppm",
+        mode=NumberMode.BOX,
+        entity_registry_visible_default=True,
+        entity_registry_enabled_default=False,
+        entity_category=EntityCategory.CONFIG,
+        component_class=ComponentClass.VOC_sensor,
+    ),
+    DanthermNumberEntityDescription(
+        key=ATTR_AIR_QUALITY_HIGH_THRESHOLD,
+        icon="mdi:molecule",
+        data_setinternal=ATTR_AIR_QUALITY_HIGH_THRESHOLD,
+        data_getinternal=ATTR_AIR_QUALITY_HIGH_THRESHOLD,
+        native_max_value=65535,
+        native_min_value=0,
+        native_step=1,
+        native_unit_of_measurement="ppm",
+        mode=NumberMode.BOX,
+        entity_registry_visible_default=True,
+        entity_registry_enabled_default=False,
+        entity_category=EntityCategory.CONFIG,
+        component_class=ComponentClass.VOC_sensor,
     ),
     DanthermNumberEntityDescription(
         key=ATTR_BOOST_MODE_TIMEOUT,

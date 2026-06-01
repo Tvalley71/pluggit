@@ -65,6 +65,7 @@ CONFIG_SCHEMA = vol.Schema(
 )
 
 PLATFORMS = [
+    Platform.BINARY_SENSOR,
     Platform.BUTTON,
     Platform.CALENDAR,
     Platform.COVER,
@@ -261,7 +262,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # If options are empty, initialize them with defaults
     if not options:
         _LOGGER.warning("No stored options found, initializing defaults")
-        hass.config_entries.async_update_entry(entry, options=DEFAULT_OPTIONS)
+        options = dict(DEFAULT_OPTIONS)
+        hass.config_entries.async_update_entry(entry, options=options)
 
     _LOGGER.debug("Loading stored options in setup: %s", options)
 
@@ -385,6 +387,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         await device.async_start()
     except Exception:
         _LOGGER.exception("Failed to start device")
+        await coordinator.async_shutdown()
+        await device.disconnect_and_close()
+        hass.data[DOMAIN].pop(entry.entry_id, None)
         return False
 
     async def _init_after_start(event: Event | None = None) -> None:
@@ -448,9 +453,13 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     # Check if this entry was primary before unload
     was_primary = is_primary_entry(hass, entry.entry_id)
+    entry_data = hass.data.get(DOMAIN, {}).get(entry.entry_id, {})
 
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
+        coordinator = entry_data.get("coordinator")
+        if coordinator is not None:
+            await coordinator.async_shutdown()
         hass.data[DOMAIN].pop(entry.entry_id, None)
 
         # Promote and reload new primary, so it can create shared calendar
