@@ -51,11 +51,11 @@ jobs:
         run: |
           if [ ! -f ".github/sync-state/dantherm-sync.json" ]; then
             if [ "${{ github.event_name }}" = "release" ]; then
-              echo "Missing .github/sync-state/dantherm-sync.json. Run sync-from-dantherm workflow first."
+              echo "Missing .github/sync-state/dantherm-sync.json. Run the 'Sync from Dantherm' workflow (.github/workflows/sync-from-dantherm.yaml) first."
               exit 1
             fi
 
-            echo "::warning::Missing .github/sync-state/dantherm-sync.json. Run sync-from-dantherm before release."
+            echo "::warning::Missing .github/sync-state/dantherm-sync.json. Run the 'Sync from Dantherm' workflow before creating a release."
           else
             echo "Dantherm sync metadata found:"
             cat ".github/sync-state/dantherm-sync.json"

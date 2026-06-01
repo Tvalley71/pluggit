@@ -28,7 +28,7 @@ jobs:
       - name: 📥 Checkout Dantherm repository
         run: |
           git clone --depth=1 --branch "${{ github.event.inputs.dantherm_branch }}" https://github.com/Tvalley71/dantherm.git dantherm \
-            || { echo "Failed to clone Tvalley71/dantherm branch '${{ github.event.inputs.dantherm_branch }}'"; exit 1; }
+            || { echo "Failed to clone Tvalley71/dantherm branch '${{ github.event.inputs.dantherm_branch }}'. Verify the branch name and try again."; exit 1; }
 
       - name: 📋 Copy shared code files (excluding pluggit-owned)
         run: |
@@ -87,4 +87,4 @@ jobs:
 
           git commit -m "🔄 Sync shared code and README from Dantherm"
           git push origin HEAD:${{ github.event.inputs.target_branch }} \
-            || { echo "Failed to push to branch '${{ github.event.inputs.target_branch }}'"; exit 1; }
+            || { echo "Failed to push to branch '${{ github.event.inputs.target_branch }}'. Check branch permissions and try again."; exit 1; }
