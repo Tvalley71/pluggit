@@ -27,7 +27,8 @@ jobs:
 
       - name: 📥 Checkout Dantherm repository
         run: |
-          git clone --depth=1 --branch "${{ github.event.inputs.dantherm_branch }}" https://github.com/Tvalley71/dantherm.git dantherm
+          git clone --depth=1 --branch "${{ github.event.inputs.dantherm_branch }}" https://github.com/Tvalley71/dantherm.git dantherm \
+            || { echo "Failed to clone Tvalley71/dantherm branch '${{ github.event.inputs.dantherm_branch }}'"; exit 1; }
 
       - name: 📋 Copy shared code files (excluding pluggit-owned)
         run: |
@@ -69,8 +70,8 @@ jobs:
 
       - name: ✅ Commit and push if any files changed
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
           git add custom_components/pluggit || true
           git add README.md || true
@@ -85,4 +86,5 @@ jobs:
           fi
 
           git commit -m "🔄 Sync shared code and README from Dantherm"
-          git push origin HEAD:${{ github.event.inputs.target_branch }}
+          git push origin HEAD:${{ github.event.inputs.target_branch }} \
+            || { echo "Failed to push to branch '${{ github.event.inputs.target_branch }}'"; exit 1; }
