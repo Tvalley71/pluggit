@@ -69,6 +69,7 @@
         "data": {
           "disable_temperature_unknown": "Deaktiver temperaturføler til ukendt i bypass/sommer tilstande",
           "disable_notifications": "Deaktiver notifikationer",
+          "enable_sensor_filtering": "Aktiver sensorfiltrering",
           "enable_time_synchronization": "Aktiver tidssynkronisering"
         }
       }
@@ -88,6 +89,44 @@
     "button": {
       "filter_reset": { "name": "Nulstil filter" },
       "alarm_reset": { "name": "Nulstil alarm" }
+    },
+    "event": {
+      "alarm_event": {
+        "name": "Alarmhændelse",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "alarm_exhaust_air_fan": "Udsugningsventilator alarm",
+              "alarm_supply_air_fan": "Indblæsningsventilator alarm",
+              "alarm_bypass_damper": "Bypass-spjæld alarm",
+              "alarm_outdoor_air": "Udeluft alarm (T1)",
+              "alarm_supply_air": "Indblæsningsluft alarm (T2)",
+              "alarm_extract_air": "Udsugningsluft alarm (T3)",
+              "alarm_exhaust_air": "Afkastluft alarm (T4)",
+              "alarm_room_air": "Rumluft alarm (T5)",
+              "alarm_rh": "RH alarm",
+              "alarm_outdoor_temperature": "Udetemperatur alarm",
+              "alarm_supply_temperature": "Indblæsningstemperatur alarm",
+              "alarm_overtemperature": "Overtemperatur alarm",
+              "alarm_communication_error": "Kommunikationsfejl",
+              "alarm_fire": "Brandalarm",
+              "alarm_high_waterlevel": "Høj vandstand alarm",
+              "alarm_fire_protection": "Brandbeskyttelse alarm"
+            }
+          }
+        }
+      },
+      "filter_event": {
+        "name": "Filterhændelse",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "filter_warning": "Filteradvarsel",
+              "filter_expired": "Filter udløbet"
+            }
+          }
+        }
+      }
     },
     "calendar": {
       "calendar": { "name": "Kalender" }
@@ -324,7 +363,6 @@
       "fireplace_mode": { "name": "Brændeovnstilstand" },
       "manual_bypass_mode": { "name": "Manuel bypasstilstand" },
       "summer_mode": { "name": "Sommertilstand" },
-      "sensor_filtering": { "name": "Sensorfiltrering" },
       "boost_mode": { "name": "Boost-tilstand" },
       "eco_mode": { "name": "Eco-tilstand" },
       "home_mode": { "name": "Hjemmetilstand" },
