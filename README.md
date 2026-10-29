@@ -269,24 +269,26 @@ Clicking on any displayed entity allows you to adjust its state or explore detai
 
 ####
 
+To integrate this into your dashboard, insert the following code into your dashboard. If your Home Assistant setup uses a language other than English, make sure to modify the entity names in the code accordingly. You also need to enable the `filter_remain_level`, `humidity_level` and `air_quality_level` sensors if these options are included.
+
 #### The code
 
 ```yaml
 
 type: picture-elements
-image: /local/pluggit1.png
+image: data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDEwIDczMCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNOTEwIDY2NSBWNzIwIEw1MCA3MjAgVjIwMCBIMTAgVjE3NSBMMjAwIDEwMCBWMzUgSDI2MCBWODUgTDQ3NSAxMCBMOTUwIDE3NSBWMjAwIEg5MTAgVjQyNSIgc3Ryb2tlPSIjQzk4QTQ5IiBzdHJva2Utd2lkdGg9IjE1IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIi8+CiAgICA8cGF0aCBkPSJNNDQ1IDQyNSBWMjkwIEg3NDAgVjQyNSIgc3Ryb2tlPSIjQzlDREQ4IiBzdHJva2Utd2lkdGg9IjE1IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIi8+CiAgICA8cGF0aCBkPSJNNDQ1IDY2NSBWNjg1IEg3NDAgVjY2NSIgc3Ryb2tlPSIjQzlDREQ4IiBzdHJva2Utd2lkdGg9IjE1IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIi8+Cjwvc3ZnPg==
 elements:
   - type: image
     entity: sensor.pluggit_filter_remain_level
     state_image:
-      "0": /local/pluggit4.png
-      "1": /local/pluggit5.png
-      "2": /local/pluggit6.png
-      "3": /local/pluggit7.png
+      "0": data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDEwIDczMCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNDk1IDMzNSBINjkwIFYzOTUgSDQ5NSBaIiBzdHJva2U9IiNDOUNERDgiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIvPgogICAgPHBhdGggZD0iTTQ5NSAzOTUgTDUyNy41IDMzNSBNNTI3LjUgMzM1IEw1NjAgMzk1IE01NjAgMzk1IEw1OTIuNSAzMzUgTTU5Mi41IDMzNSBMNjI1IDM5NSBNNjI1IDM5NSBMNjU3LjUgMzM1IE02NTcuNSAzMzUgTDY5MCAzOTUiIHN0cm9rZT0iI0M5Q0REOCIgc3Ryb2tlLXdpZHRoPSI4IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIi8+Cjwvc3ZnPg==
+      "1": data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDEwIDczMCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNDk1IDM5NSBMNTI3LjUgMzM1IEw1NjAgMzk1IFoiIGZpbGw9IiNDOThBNDkiLz4KICAgIDxwYXRoIGQ9Ik00OTUgMzM1IEg2OTAgVjM5NSBINDk1IFoiIHN0cm9rZT0iI0M5Q0REOCIgc3Ryb2tlLXdpZHRoPSI4IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIi8+CiAgICA8cGF0aCBkPSJNNDk1IDM5NSBMNTI3LjUgMzM1IE01MjcuNSAzMzUgTDU2MCAzOTUgTTU2MCAzOTUgTDU5Mi41IDMzNSBNNTkyLjUgMzM1IEw2MjUgMzk1IE02MjUgMzk1IEw2NTcuNSAzMzUgTTY1Ny41IDMzNSBMNjkwIDM5NSIgc3Ryb2tlPSIjQzlDREQ4IiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiLz4KPC9zdmc+
+      "2": data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDEwIDczMCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNDk1IDM5NSBMNTI3LjUgMzM1IEw1NjAgMzk1IFoiIGZpbGw9IiNDOThBNDkiLz4KICAgIDxwYXRoIGQ9Ik01NjAgMzk1IEw1OTIuNSAzMzUgTDYyNSAzOTUgWiIgZmlsbD0iI0M5OEE0OSIvPgogICAgPHBhdGggZD0iTTQ5NSAzMzUgSDY5MCBWMzk1IEg0OTUgWiIgc3Ryb2tlPSIjQzlDREQ4IiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiLz4KICAgIDxwYXRoIGQ9Ik00OTUgMzk1IEw1MjcuNSAzMzUgTTUyNy41IDMzNSBMNTYwIDM5NSBNNTYwIDM5NSBMNTkyLjUgMzM1IE01OTIuNSAzMzUgTDYyNSAzOTUgTTYyNSAzOTUgTDY1Ny41IDMzNSBNNjU3LjUgMzM1IEw2OTAgMzk1IiBzdHJva2U9IiNDOUNERDgiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIvPgo8L3N2Zz4=
+      "3": data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDEwIDczMCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNDk1IDM5NSBMNTI3LjUgMzM1IEw1NjAgMzk1IFoiIGZpbGw9IiNDOThBNDkiLz4KICAgIDxwYXRoIGQ9Ik01NjAgMzk1IEw1OTIuNSAzMzUgTDYyNSAzOTUgWiIgZmlsbD0iI0M5OEE0OSIvPgogICAgPHBhdGggZD0iTTYyNSAzOTUgTDY1Ny41IDMzNSBMNjkwIDM5NSBaIiBmaWxsPSIjQzk4QTQ5Ii8+CiAgICA8cGF0aCBkPSJNNDk1IDMzNSBINjkwIFYzOTUgSDQ5NSBaIiBzdHJva2U9IiNDOUNERDgiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIvPgogICAgPHBhdGggZD0iTTQ5NSAzOTUgTDUyNy41IDMzNSBNNTI3LjUgMzM1IEw1NjAgMzk1IE01NjAgMzk1IEw1OTIuNSAzMzUgTTU5Mi41IDMzNSBMNjI1IDM5NSBNNjI1IDM5NSBMNjU3LjUgMzM1IE02NTcuNSAzMzUgTDY5MCAzOTUiIHN0cm9rZT0iI0M5Q0REOCIgc3Ryb2tlLXdpZHRoPSI4IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIi8+Cjwvc3ZnPg==
     style:
-      left: 59.5%
+      left: 50%
       top: 50%
-      width: 20.04%
+      width: 100%
     tap_action:
       action: none
   - type: conditional
@@ -297,14 +299,14 @@ elements:
       - type: image
         entity: cover.pluggit_bypass_damper
         state_image:
-          closed: /local/pluggit2.png
-          closing: /local/pluggit2.png
-          open: /local/pluggit3.png
-          opening: /local/pluggit3.png
+          closed: &pluggit2 data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MzEgMjQ1IiBmaWxsPSJub25lIj4KICAgIDxwYXRoIGQ9Ik0gMjYzIDk3LjUgViAxNDcuNSIgc3Ryb2tlPSIjQzlDREQ4IiBzdHJva2Utd2lkdGg9IjE1IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIi8+CiAgICA8cGF0aCBkPSJNIDU1OCA5Ny41IFYgMTQ3LjUiIHN0cm9rZT0iI0M5Q0REOCIgc3Ryb2tlLXdpZHRoPSIxNSIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIvPgogICAgPHBhdGggZD0iTSA3MjggOTcuNSBWIDE0Ny41IiBzdHJva2U9IiNDOThBNDkiIHN0cm9rZS13aWR0aD0iMTUiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiLz4KICAgIDxwYXRoIGQ9Ik0gMTggNy41IEggMzE4IEwgNTEzIDE0Ny41IEggNzY4IEwgODEzIDE5Mi41IEwgNzY4IDIzNy41IEggNTEzIEwgMzE4IDk3LjUgSCAxOCBMIDYzIDUyLjUgWiIgc3Ryb2tlPSIjQzlDREQ4IiBzdHJva2Utd2lkdGg9IjE1IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIi8+CiAgICA8cGF0aCBkPSJNIDQxOCA3Ny41IEwgNTEzIDcuNSBIIDgxMyBMIDc2OCA1Mi41IEwgODEzIDk3LjUgSCA1MTMgTCA0NzggMTIyLjUiIHN0cm9rZT0iI0M5Q0REOCIgc3Ryb2tlLXdpZHRoPSIxNSIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIvPgogICAgPHBhdGggZD0iTSAzNTQgMTI0LjUgTCAzMTggMTQ3LjUgSCA2MyBMIDE4IDE5Mi41IEwgNjMgMjM3LjUgSCAzMTggTCA0MTMgMTcyLjUiIHN0cm9rZT0iI0M5Q0REOCIgc3Ryb2tlLXdpZHRoPSIxNSIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIvPgo8L3N2Zz4=
+          closing: *pluggit2
+          open: &pluggit3 data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MzEgMjQ1IiBmaWxsPSJub25lIj4KICAgIDxwYXRoIGQ9Ik0gMjYzIDk3LjUgViAxNDcuNSIgc3Ryb2tlPSIjQzlDREQ4IiBzdHJva2Utd2lkdGg9IjE1IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIi8+CiAgICA8cGF0aCBkPSJNIDU1OCA5Ny41IFYgMTQ3LjUiIHN0cm9rZT0iI0M5Q0REOCIgc3Ryb2tlLXdpZHRoPSIxNSIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIvPgogICAgPHBhdGggZD0iTSA3MjggOTcuNSBWIDE0Ny41IiBzdHJva2U9IiNDOThBNDkiIHN0cm9rZS13aWR0aD0iMTUiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiLz4KICAgIDxwYXRoIGQ9Ik0gMTggNy41IEggNzY4IEwgODEzIDUyLjUgTCA3NjggOTcuNSBIIDE4IEwgNjMgNTIuNSBaIiBzdHJva2U9IiNDOUNERDgiIHN0cm9rZS13aWR0aD0iMTUiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiLz4KICAgIDxwYXRoIGQ9Ik0gNjMgMTQ3LjUgSCA4MTMgTCA3NjggMTkyLjUgTCA4MTMgMjM3LjUgSCA2MyBMIDE4IDE5Mi41IEwgMTggMTkyLjUgWiIgc3Ryb2tlPSIjQzlDREQ4IiBzdHJva2Utd2lkdGg9IjE1IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIi8+Cjwvc3ZnPg==
+          opening: *pluggit3
         style:
-          left: 59.4%
-          top: 74.35%
-          width: 79.66%
+          left: 59.1584%
+          top: 74.6575%
+          width: 82.2983%
         tap_action:
           action: more-info
       - type: conditional
@@ -317,22 +319,22 @@ elements:
           - type: state-label
             entity: sensor.pluggit_outdoor_temperature
             style:
-              top: 66%
+              top: 65%
               left: 83%
           - type: state-label
             entity: sensor.pluggit_extract_temperature
             style:
-              top: 66%
+              top: 65%
               left: 35%
           - type: state-label
             entity: sensor.pluggit_exhaust_temperature
             style:
-              top: 83%
+              top: 84%
               left: 83%
           - type: state-label
             entity: sensor.pluggit_supply_temperature
             style:
-              top: 83%
+              top: 84%
               left: 35%
       - type: conditional
         conditions:
@@ -344,12 +346,12 @@ elements:
           - type: state-label
             entity: sensor.pluggit_extract_temperature
             style:
-              top: 66%
+              top: 65%
               left: 35%
           - type: state-label
             entity: sensor.pluggit_outdoor_temperature
             style:
-              top: 83%
+              top: 84%
               left: 83%
   - type: conditional
     conditions:
@@ -357,11 +359,11 @@ elements:
         state: "6"
     elements:
       - type: image
-        image: /local/pluggit8.png
+        image: data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MzEgMjQ1IiBmaWxsPSJub25lIj4KICAgIDxwYXRoIGQ9Ik0gMjYzIDk3LjUgViAyMzcuNSIgc3Ryb2tlPSIjQzlDREQ4IiBzdHJva2Utd2lkdGg9IjE1IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIi8+CiAgICA8cGF0aCBkPSJNIDU1OCA5Ny41IFYgMjM3LjUiIHN0cm9rZT0iI0M5Q0REOCIgc3Ryb2tlLXdpZHRoPSIxNSIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIvPgogICAgPHBhdGggZD0iTSA3MjggOTcuNSBWIDIzNy41IiBzdHJva2U9IiNDOThBNDkiIHN0cm9rZS13aWR0aD0iMTUiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiLz4KICAgIDxwYXRoIGQ9Ik0gMTggNy41IEggNzY4IEwgODEzIDUyLjUgTCA3NjggOTcuNSBIIDE4IEwgNjMgNTIuNSBaIiBzdHJva2U9IiNDOUNERDgiIHN0cm9rZS13aWR0aD0iMTUiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiLz4KPC9zdmc+
         style:
-          left: 59.4%
-          top: 74.35%
-          width: 79.66%
+          left: 59.1584%
+          top: 74.6575%
+          width: 82.2983%
         tap_action:
           action: none
       - type: state-label
@@ -390,7 +392,6 @@ elements:
     style:
       top: 47%
       left: 25.5%
-      # font-size: 125%
   - type: state-label
     entity: select.pluggit_fan_selection
     style:
@@ -398,46 +399,46 @@ elements:
       left: 60%
       # font-size: 125%
       transform: translate(0%,-50%)
-#  - type: image
-#    entity: sensor.pluggit_humidity_level
-#    state_image:
-#      "0": /local/pluggit9.png
-#      "1": /local/pluggit10.png
-#      "2": /local/pluggit11.png
-#      "3": /local/pluggit12.png
-#    style:
-#      top: 29%
-#      left: 16%
-#      width: 3.76%
-#    tap_action:
-#      action: none
-#  - type: state-label
-#    entity: sensor.pluggit_humidity
-#    style:
-#      top: 29%
-#      left: 18%
-#      # font-size: 125%
-#      transform: translate(0%,-50%)
-#  - type: image
-#    entity: sensor.pluggit_air_quality_level
-#    state_image:
-#      "0": /local/pluggit13.png
-#      "1": /local/pluggit14.png
-#      "2": /local/pluggit15.png
-#      "3": /local/pluggit16.png
-#    style:
-#      top: 29%
-#      left: 36%
-#      width: 5.45%
-#    tap_action:
-#      action: none
-#  - type: state-label
-#    entity: sensor.pluggit_air_quality
-#    style:
-#      top: 29%
-#      left: 39%
-#      # font-size: 125%
-#      transform: translate(0%,-50%)
+  - type: image
+    entity: sensor.pluggit_humidity_level
+    state_image:
+      "0": data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjYgMjA2IiBmaWxsPSJub25lIj4KICA8cGF0aCBpZD0iZHJhYWJlZm9ybSIgZD0iTTgzIDUgQzgzIDUgNSA4OSA1IDEzNSBDNSAxODEgNDAgMjAxIDgzIDIwMSBDMTI2IDIwMSAxNjEgMTgxIDE2MSAxMzUgQzE2MSA4OSA4MyA1IDgzIDUgWiIgc3Ryb2tlPSIjQzlDREQ4IiBzdHJva2Utd2lkdGg9IjEwIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=
+      "1": data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjYgMjA2IiBmaWxsPSJub25lIj4KICA8cGF0aCBpZD0ibmVkcmUtbml2ZWF1IiBkPSJNMTkuOTE0IDExNi43NjYgQzE4LjM1OSAxMjEuOTM5IDE3LjQ4IDEyNi44NDQgMTcuNDggMTMxLjMyIEMxNy40OCAxNjkuOTYgNDYuODggMTg2Ljc2IDgzIDE4Ni43NiBDMTA2LjQwMyAxODYuNzYgMTI2Ljk4NSAxNzkuNzA3IDEzOC41NzcgMTY0LjIzMSBaIiBmaWxsPSIjQUFBOEZBIi8+CiAgPHBhdGggaWQ9ImRyYWFiZWZvcm0iIGQ9Ik04MyA1IEM4MyA1IDUgODkgNSAxMzUgQzUgMTgxIDQwIDIwMSA4MyAyMDEgQzEyNiAyMDEgMTYxIDE4MSAxNjEgMTM1IEMxNjEgODkgODMgNSA4MyA1IFoiIHN0cm9rZT0iI0M5Q0REOCIgc3Ryb2tlLXdpZHRoPSIxMCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K
+      "2": data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjYgMjA2IiBmaWxsPSJub25lIj4KICA8cGF0aCBpZD0ibWlkdGVyc3RlLW5pdmVhdSIgZD0iTTQ4LjE4NiA2NS4wNzQgQzM3Ljk4NSA3OS4zMyAyOC4wNTEgOTUuMjU2IDIyLjM2MSAxMDkuNzQ0IEwxNDIuNTkxIDE1Ny44MzYgQzE0Ni4zOTcgMTUwLjUxIDE0OC41MiAxNDEuNzAzIDE0OC41MiAxMzEuMzIgQzE0OC41MiAxMjIuNzE1IDE0NS4yNzEgMTEyLjUyNyAxNDAuMjE5IDEwMS44ODggWiIgZmlsbD0iI0FBQThGQSIvPgogIDxwYXRoIGlkPSJuZWRyZS1uaXZlYXUiIGQ9Ik0xOS45MTQgMTE2Ljc2NiBDMTguMzU5IDEyMS45MzkgMTcuNDggMTI2Ljg0NCAxNy40OCAxMzEuMzIgQzE3LjQ4IDE2OS45NiA0Ni44OCAxODYuNzYgODMgMTg2Ljc2IEMxMDYuNDAzIDE4Ni43NiAxMjYuOTg1IDE3OS43MDcgMTM4LjU3NyAxNjQuMjMxIFoiIGZpbGw9IiNBQUE4RkEiLz4KICA8cGF0aCBpZD0iZHJhYWJlZm9ybSIgZD0iTTgzIDUgQzgzIDUgNSA4OSA1IDEzNSBDNSAxODEgNDAgMjAxIDgzIDIwMSBDMTI2IDIwMSAxNjEgMTgxIDE2MSAxMzUgQzE2MSA4OSA4MyA1IDgzIDUgWiIgc3Ryb2tlPSIjQzlDREQ4IiBzdHJva2Utd2lkdGg9IjEwIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=
+      "3": data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjYgMjA2IiBmaWxsPSJub25lIj4KICA8cGF0aCBpZD0ib2V2cmUtbml2ZWF1IiBkPSJNODMgMjIuMTIgQzgzIDIyLjEyIDY4LjIyNCAzOC4wMzMgNTIuNzA2IDU4Ljg4MiBMMTM0Ljk4OCA5MS43OTUgQzExNS44MDMgNTcuNDQ2IDgzIDIyLjEyIDgzIDIyLjEyIFoiIGZpbGw9IiNBQUE4RkEiLz4KICA8cGF0aCBpZD0ibWlkdGVyc3RlLW5pdmVhdSIgZD0iTTQ4LjE4NiA2NS4wNzQgQzM3Ljk4NSA3OS4zMyAyOC4wNTEgOTUuMjU2IDIyLjM2MSAxMDkuNzQ0IEwxNDIuNTkxIDE1Ny44MzYgQzE0Ni4zOTcgMTUwLjUxIDE0OC41MiAxNDEuNzAzIDE0OC41MiAxMzEuMzIgQzE0OC41MiAxMjIuNzE1IDE0NS4yNzEgMTEyLjUyNyAxNDAuMjE5IDEwMS44ODggWiIgZmlsbD0iI0FBQThGQSIvPgogIDxwYXRoIGlkPSJuZWRyZS1uaXZlYXUiIGQ9Ik0xOS45MTQgMTE2Ljc2NiBDMTguMzU5IDEyMS45MzkgMTcuNDggMTI2Ljg0NCAxNy40OCAxMzEuMzIgQzE3LjQ4IDE2OS45NiA0Ni44OCAxODYuNzYgODMgMTg2Ljc2IEMxMDYuNDAzIDE4Ni43NiAxMjYuOTg1IDE3OS43MDcgMTM4LjU3NyAxNjQuMjMxIFoiIGZpbGw9IiNBQUE4RkEiLz4KICA8cGF0aCBpZD0iZHJhYWJlZm9ybSIgZD0iTTgzIDUgQzgzIDUgNSA4OSA1IDEzNSBDNSAxODEgNDAgMjAxIDgzIDIwMSBDMTI2IDIwMSAxNjEgMTgxIDE2MSAxMzUgQzE2MSA4OSA4MyA1IDgzIDUgWiIgc3Ryb2tlPSIjQzlDREQ4IiBzdHJva2Utd2lkdGg9IjEwIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=
+    style:
+      top: 29%
+      left: 16%
+      width: 5%
+    tap_action:
+      action: none
+  - type: state-label
+    entity: sensor.pluggit_humidity
+    style:
+      top: 29%
+      left: 18%
+      # font-size: 125%
+      transform: translate(0%,-50%)
+  - type: image
+    entity: sensor.pluggit_air_quality_level
+    state_image:
+      "0": data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyOTYgMTk2IiBmaWxsPSJub25lIj4KICA8cGF0aCBpZD0iYmFnZXN0ZS1jaXJrZWxidWUiIGQ9Ik02NC4wMDAgODAuMDAwIEE3MiA3MiAwIDAgMSAxODguMjYwIDMwLjQ3NCIgc3Ryb2tlPSIjQzlDREQ4IiBzdHJva2Utd2lkdGg9IjEyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBpZD0iaG9lanJlLWNpcmtlbGJ1ZSIgZD0iTTEzMy4wNjAgODAuMDAwIEE4MCA4MCAwIDEgMSAxNzQuNDQwIDE4Mi42MjEiIHN0cm9rZT0iI0M5Q0REOCIgc3Ryb2tlLXdpZHRoPSIxMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPHBhdGggaWQ9Im92YWwta29udHVyIiBkPSJNNjAgODAgSDE1NiBDMTg4IDgwIDIwOCAxMDAgMjA4IDEzMiBDMjA4IDE2NCAxODggMTg0IDE1NiAxODQgSDYwIEMyOCAxODQgOCAxNjQgOCAxMzIgQzggMTAwIDI4IDgwIDYwIDgwIFoiIHN0cm9rZT0iI0M5Q0REOCIgc3Ryb2tlLXdpZHRoPSIxMiIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K
+      "1": data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyOTYgMTk2IiBmaWxsPSJub25lIj4KICA8cGF0aCBpZD0iYmxhYS1mb3JyZXN0ZSIgZD0iTTYwIDkyIEgxNTYgQzE4MCA5MiAxOTYgMTA4IDE5NiAxMzIgQzE5NiAxNTYgMTgwIDE3MiAxNTYgMTcyIEg2MCBDMzYgMTcyIDIwIDE1NiAyMCAxMzIgQzIwIDEwOCAzNiA5MiA2MCA5MiBaIiBmaWxsPSIjNDA2QUM5Ii8+CiAgPHBhdGggaWQ9ImJhZ2VzdGUtY2lya2VsYnVlIiBkPSJNNjQuMDAwIDgwLjAwMCBBNzIgNzIgMCAwIDEgMTg4LjI2MCAzMC40NzQiIHN0cm9rZT0iI0M5Q0REOCIgc3Ryb2tlLXdpZHRoPSIxMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPHBhdGggaWQ9ImhvZWpyZS1jaXJrZWxidWUiIGQ9Ik0xMzMuMDYwIDgwLjAwMCBBODAgODAgMCAxIDEgMTc0LjQ0MCAxODIuNjIxIiBzdHJva2U9IiNDOUNERDgiIHN0cm9rZS13aWR0aD0iMTIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxwYXRoIGlkPSJvdmFsLWtvbnR1ciIgZD0iTTYwIDgwIEgxNTYgQzE4OCA4MCAyMDggMTAwIDIwOCAxMzIgQzIwOCAxNjQgMTg4IDE4NCAxNTYgMTg0IEg2MCBDMjggMTg0IDggMTY0IDggMTMyIEM4IDEwMCAyOCA4MCA2MCA4MCBaIiBzdHJva2U9IiNDOUNERDgiIHN0cm9rZS13aWR0aD0iMTIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==
+      "2": data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyOTYgMTk2IiBmaWxsPSJub25lIj4KICA8cGF0aCBpZD0iYmxhYS1ob2VqcmUiIGQ9Ik0xNTguMDE1IDY4LjAzMiBBNjQgNjQgMCAxIDEgMjA1Ljk4NSAxNzMuOTY4IEE2NCA2NCAwIDAgMCAxNTguMDE1IDY4LjAzMiBaIiBmaWxsPSIjNDA2QUM5Ii8+CiAgPHBhdGggaWQ9ImJsYWEtZm9ycmVzdGUiIGQ9Ik02MCA5MiBIMTU2IEMxODAgOTIgMTk2IDEwOCAxOTYgMTMyIEMxOTYgMTU2IDE4MCAxNzIgMTU2IDE3MiBINjAgQzM2IDE3MiAyMCAxNTYgMjAgMTMyIEMyMCAxMDggMzYgOTIgNjAgOTIgWiIgZmlsbD0iIzQwNkFDOSIvPgogIDxwYXRoIGlkPSJiYWdlc3RlLWNpcmtlbGJ1ZSIgZD0iTTY0LjAwMCA4MC4wMDAgQTcyIDcyIDAgMCAxIDE4OC4yNjAgMzAuNDc0IiBzdHJva2U9IiNDOUNERDgiIHN0cm9rZS13aWR0aD0iMTIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxwYXRoIGlkPSJob2VqcmUtY2lya2VsYnVlIiBkPSJNMTMzLjA2MCA4MC4wMDAgQTgwIDgwIDAgMSAxIDE3NC40NDAgMTgyLjYyMSIgc3Ryb2tlPSIjQzlDREQ4IiBzdHJva2Utd2lkdGg9IjEyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBpZD0ib3ZhbC1rb250dXIiIGQ9Ik02MCA4MCBIMTU2IEMxODggODAgMjA4IDEwMCAyMDggMTMyIEMyMDggMTY0IDE4OCAxODQgMTU2IDE4NCBINjAgQzI4IDE4NCA4IDE2NCA4IDEzMiBDOCAxMDAgMjggODAgNjAgODAgWiIgc3Ryb2tlPSIjQzlDREQ4IiBzdHJva2Utd2lkdGg9IjEyIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=
+      "3": data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyOTYgMTk2IiBmaWxsPSJub25lIj4KICA8cGF0aCBpZD0iYmxhYS1iYWdlc3RlIiBkPSJNODEuMzA0IDY4LjAwMCBBNTYgNTYgMCAwIDEgMTYwLjEwMiAyOS40NTIgQTkyIDkyIDAgMCAwIDEyNS4xNTEgNjguMDAwIFoiIGZpbGw9IiM0MDZBQzkiLz4KICA8cGF0aCBpZD0iYmxhYS1ob2VqcmUiIGQ9Ik0xNTguMDE1IDY4LjAzMiBBNjQgNjQgMCAxIDEgMjA1Ljk4NSAxNzMuOTY4IEE2NCA2NCAwIDAgMCAxNTguMDE1IDY4LjAzMiBaIiBmaWxsPSIjNDA2QUM5Ii8+CiAgPHBhdGggaWQ9ImJsYWEtZm9ycmVzdGUiIGQ9Ik02MCA5MiBIMTU2IEMxODAgOTIgMTk2IDEwOCAxOTYgMTMyIEMxOTYgMTU2IDE4MCAxNzIgMTU2IDE3MiBINjAgQzM2IDE3MiAyMCAxNTYgMjAgMTMyIEMyMCAxMDggMzYgOTIgNjAgOTIgWiIgZmlsbD0iIzQwNkFDOSIvPgogIDxwYXRoIGlkPSJiYWdlc3RlLWNpcmtlbGJ1ZSIgZD0iTTY0LjAwMCA4MC4wMDAgQTcyIDcyIDAgMCAxIDE4OC4yNjAgMzAuNDc0IiBzdHJva2U9IiNDOUNERDgiIHN0cm9rZS13aWR0aD0iMTIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxwYXRoIGlkPSJob2VqcmUtY2lya2VsYnVlIiBkPSJNMTMzLjA2MCA4MC4wMDAgQTgwIDgwIDAgMSAxIDE3NC40NDAgMTgyLjYyMSIgc3Ryb2tlPSIjQzlDREQ4IiBzdHJva2Utd2lkdGg9IjEyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBpZD0ib3ZhbC1rb250dXIiIGQ9Ik02MCA4MCBIMTU2IEMxODggODAgMjA4IDEwMCAyMDggMTMyIEMyMDggMTY0IDE4OCAxODQgMTU2IDE4NCBINjAgQzI4IDE4NCA4IDE2NCA4IDEzMiBDOCAxMDAgMjggODAgNjAgODAgWiIgc3Ryb2tlPSIjQzlDREQ4IiBzdHJva2Utd2lkdGg9IjEyIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=
+    style:
+      top: 29%
+      left: 36%
+      width: 7%
+    tap_action:
+      action: none
+  - type: state-label
+    entity: sensor.pluggit_air_quality
+    style:
+      top: 29%
+      left: 39%
+      # font-size: 125%
+      transform: translate(0%,-50%)
 
 ```
 </details>
